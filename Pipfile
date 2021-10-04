@@ -5,8 +5,10 @@ name = "pypi"
 
 [packages]
 python-telegram-bot = "==13.7"
+requests = "*"
 
 [dev-packages]
+jupyterlab = "*"
 ipython = "*"
 pytest = "*"
 pytest-cov = "*"
