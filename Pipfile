@@ -8,6 +8,8 @@ python-telegram-bot = "==13.7"
 
 [dev-packages]
 ipython = "*"
+pytest = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.8"
