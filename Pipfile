@@ -11,7 +11,7 @@ django = "~=3.2"
 [dev-packages]
 jupyterlab = "*"
 ipython = "*"
-pytest = "*"
+pytest = "~=6.2"
 pytest-cov = "*"
 python-dotenv = "*"
 
