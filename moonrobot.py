@@ -15,5 +15,5 @@ def start(update, context):
 
 dispatcher.add_handler(CommandHandler('start', start))
 
-if __name__ == '__main__':
-    updater.start_polling()
+# if __name__ == '__main__':  # doesn't work with "manage.py shell < moonrobot.py"
+updater.start_polling()
