@@ -4,8 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-python-telegram-bot = "==13.7"
-requests = "*"
+python-telegram-bot = "~=13.7"
+requests = "~=2.26"
+django = "~=3.2"
 
 [dev-packages]
 jupyterlab = "*"
