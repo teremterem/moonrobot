@@ -3,18 +3,36 @@ import logging
 from pprint import pformat
 from queue import Queue
 from threading import Thread
+from typing import Union
 
 from django.conf import settings
 from django.http import HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 from telegram import Update, Bot
 from telegram.ext import Dispatcher, CallbackContext, CommandHandler
+from telegram.utils.request import Request
+from telegram.utils.types import JSONDict
 
 from botapp.models import Dummy
 
 logger = logging.getLogger(__name__)
 
-bot = Bot(settings.MOONROBOT_TELEGRAM_TOKEN)
+
+class MoonRobotRequest(Request):
+    def post(self, url: str, data: JSONDict, timeout: float = None) -> Union[JSONDict, bool]:
+        logger.warning(f"\nBOT:\n\n%s", pformat(data))  # TODO oleksandr: switch to debug or info
+
+        resp_json = super().post(url, data, timeout=timeout)
+
+        logger.warning(f"\nSERVER RESPONSE:\n\n%s\n", pformat(resp_json))  # TODO oleksandr: switch to debug or info
+
+        return resp_json
+
+
+bot = Bot(
+    settings.MOONROBOT_TELEGRAM_TOKEN,
+    request=MoonRobotRequest(),
+)
 bot.set_webhook(settings.MOONROBOT_TELEGRAM_WEBHOOK)
 
 update_queue = Queue()
