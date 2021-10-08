@@ -43,7 +43,7 @@ def telegram_webhook(request: HttpRequest) -> HttpResponse:
     https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks#custom-solution
     """
     body_json = json.loads(request.body)
-    logger.info(f"TELEGRAM UPDATE:\n%s", pformat(body_json))  # TODO oleksandr: set to debug
+    logger.warning(f"TELEGRAM UPDATE:\n%s", pformat(body_json))  # TODO oleksandr: switch to debug or info
     update_queue.put(
         Update.de_json(body_json, bot)
     )
