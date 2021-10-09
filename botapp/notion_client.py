@@ -37,7 +37,7 @@ def collect_plain_text(rich_text_list):
 
 def collect_html_text(rich_text_list):
     def decorate_piece(piece):
-        piece_text = html.escape(piece['content']['text'])
+        piece_text = html.escape(piece['text']['content'])
         piece_annotations = piece['annotations']
 
         if piece_annotations['code']:
@@ -51,7 +51,7 @@ def collect_html_text(rich_text_list):
         if piece_annotations['underline']:
             piece_text = f"<u>{piece_text}</u>"
 
-        piece_link = piece['content']['link']
+        piece_link = (piece['text']['link'] or {}).get('url')
         if piece_link:
             piece_text = f"<a href=\"{piece_link}\">{piece_text}</a>"
 
