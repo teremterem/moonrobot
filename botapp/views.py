@@ -49,7 +49,11 @@ def handle_anything(update: Update, context: CallbackContext) -> None:
     if update.effective_message:
         msg = entrypoints_dict.get(update.effective_message.text)
         if msg:
-            context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
+            context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                parse_mode=ParseMode.HTML,
+                text=msg,
+            )
         else:
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
@@ -61,7 +65,7 @@ def handle_anything(update: Update, context: CallbackContext) -> None:
 <s>strikethrough</s>, <strike>strikethrough</strike>, <del>strikethrough</del>
 <b>bold <i>italic bold <s>italic bold strikethrough</s> <u>underline italic bold</u></i> bold</b>
 <a href="http://www.example.com/">inline URL</a>
-<a href="tg://user?id=123456789">inline mention of a user</a>
+<a href="tg://user?id=210723289">inline mention of a user</a>
 <code>inline fixed-width code</code>
 <pre>pre-formatted fixed-width code block</pre>
 <pre><code class="language-python">pre-formatted fixed-width code block written in the Python programming language</code></pre>
