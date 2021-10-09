@@ -9,11 +9,9 @@ from django.conf import settings
 from django.http import HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 from telegram import Update, Bot
-from telegram.ext import Dispatcher, CallbackContext, CommandHandler
+from telegram.ext import Dispatcher, CallbackContext, MessageHandler, Filters
 from telegram.utils.request import Request
 from telegram.utils.types import JSONDict
-
-from botapp.models import Dummy
 
 logger = logging.getLogger(__name__)
 
@@ -43,13 +41,12 @@ dispatcher = Dispatcher(
 )
 
 
-def start(update: Update, context: CallbackContext) -> None:
-    ddd = Dummy(tetetext='tratata')
-    ddd.save()
-    context.bot.send_message(chat_id=update.effective_chat.id, text="YO YO yo yo yo")
+def handle_anything(update: Update, context: CallbackContext) -> None:
+    context.bot.send_message(chat_id=update.effective_chat.id, text=update.effective_message.text)
 
 
-dispatcher.add_handler(CommandHandler('start', start))
+# covers everything except for what CallbackQueryHandler covers (any other exceptions?)
+dispatcher.add_handler(MessageHandler(Filters.all, handle_anything))
 
 thread = Thread(target=dispatcher.start, name='telegram_dispatcher', daemon=True)
 thread.start()
