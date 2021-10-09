@@ -13,16 +13,18 @@ from telegram.ext import Dispatcher, CallbackContext, MessageHandler, Filters
 from telegram.utils.request import Request
 from telegram.utils.types import JSONDict
 
+from botapp.notion_client import fetch_entrypoint_dict
+
 logger = logging.getLogger(__name__)
 
 
 class MoonRobotRequest(Request):
     def post(self, url: str, data: JSONDict, timeout: float = None) -> Union[JSONDict, bool]:
-        logger.warning(f"\nBOT:\n\n%s", pformat(data))  # TODO oleksandr: switch to debug or info
+        logger.warning('\nBOT:\n\n%s', pformat(data))  # TODO oleksandr: switch to debug or info
 
         resp_json = super().post(url, data, timeout=timeout)
 
-        logger.warning(f"\nSERVER RESPONSE:\n\n%s\n", pformat(resp_json))  # TODO oleksandr: switch to debug or info
+        logger.warning('\nSERVER RESPONSE:\n\n%s\n', pformat(resp_json))  # TODO oleksandr: switch to debug or info
 
         return resp_json
 
@@ -42,7 +44,12 @@ dispatcher = Dispatcher(
 
 
 def handle_anything(update: Update, context: CallbackContext) -> None:
-    context.bot.send_message(chat_id=update.effective_chat.id, text=update.effective_message.text)
+    entrypoints_dict = fetch_entrypoint_dict()
+
+    if update.effective_message:
+        msg = entrypoints_dict.get(update.effective_message.text)
+        if msg:
+            context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
 
 
 # covers everything except for what CallbackQueryHandler covers (any other exceptions?)
@@ -58,7 +65,7 @@ def telegram_webhook(request: HttpRequest) -> HttpResponse:
     https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks#custom-solution
     """
     body_json = json.loads(request.body)
-    logger.warning(f"\nTELEGRAM UPDATE:\n\n%s\n", pformat(body_json))  # TODO oleksandr: switch to debug or info
+    logger.warning('\nTELEGRAM UPDATE:\n\n%s\n', pformat(body_json))  # TODO oleksandr: switch to debug or info
     update_queue.put(
         Update.de_json(body_json, bot)
     )
