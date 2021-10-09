@@ -1,3 +1,4 @@
+import html
 import logging
 from pprint import pformat
 
@@ -34,13 +35,18 @@ def collect_plain_text(rich_text_list):
     return text
 
 
+def collect_html_text(rich_text_list):
+    text = ''.join([html.escape(i['plain_text']) for i in rich_text_list])
+    return text
+
+
 def fetch_entrypoint_dict():
     entrypoints_db_content = query_notion_db(settings.MRBT_ENTRYPOINTS_DB_ID)
 
     entrypoints_dict = {}
     for res in entrypoints_db_content['results']:
         key = collect_plain_text(res['properties']['Name']['title'])
-        value = collect_plain_text(res['properties']['Message']['rich_text'])
+        value = collect_html_text(res['properties']['Message']['rich_text'])
         entrypoints_dict[key] = value
 
     logger.warning('\nENTRY POINTS:\n\n%s\n', pformat(entrypoints_dict))  # TODO oleksandr: switch to debug or info
