@@ -5,7 +5,7 @@ from threading import Thread
 from typing import Union
 
 from django.conf import settings
-from telegram import Bot
+from telegram import Bot, Message
 from telegram import Update
 from telegram.utils.request import Request
 from telegram.utils.types import JSONDict
@@ -49,13 +49,16 @@ class MoonRobotRequest(Request):
         logger.warning('\nBOT: %s\n\n%s', url_suffix, pformat(data))  # TODO oleksandr: switch to debug or info
 
         resp_json = super().post(url, data, timeout=timeout)
+        resp_msg = Message.de_json(resp_json, get_bot())
 
-        mrb_bot_message = MrbBotMessage(
-            url_suffix=url_suffix,
-            request_payload=data,
-            response_payload=resp_json,
-        )
-        mrb_bot_message.save()
+        if url_suffix != '/setWebhook':
+            mrb_bot_message = MrbBotMessage(
+                plain_text=resp_msg.text,
+                url_suffix=url_suffix,
+                request_payload=data,
+                response_payload=resp_json,
+            )
+            mrb_bot_message.save()
 
         logger.warning('\nSERVER RESPONSE:\n\n%s\n', pformat(resp_json))  # TODO oleksandr: switch to debug or info
 
@@ -65,9 +68,12 @@ class MoonRobotRequest(Request):
 def handle_telegram_update_json(update_json: JSONDict):
     logger.warning('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))  # TODO oleksandr: switch to debug or info
 
+    update = Update.de_json(update_json, get_bot())
+
     mrb_user_message = MrbUserMessage(
+        plain_text=update.effective_message.text,
         update_payload=update_json,
     )
     mrb_user_message.save()
 
-    handle_telegram_update(Update.de_json(update_json, get_bot()), get_bot())
+    handle_telegram_update(update, get_bot())

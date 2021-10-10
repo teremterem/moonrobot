@@ -22,7 +22,7 @@ def request_notion(uri: str, body_json=None) -> JSONDict:
     ) as resp:
         resp_json = resp.json()
 
-    logger.warning('\nNOTION: %s\n\n%s\n', url, pformat(resp_json))  # TODO oleksandr: switch to debug or info
+    # logger.warning('\nNOTION: %s\n\n%s\n', url, pformat(resp_json))  # TODO oleksandr: switch to debug or info
     return resp_json
 
 
