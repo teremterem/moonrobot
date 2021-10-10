@@ -130,4 +130,4 @@ dmypy.json
 
 # Other
 .idea/
-
+.virtual_documents/
