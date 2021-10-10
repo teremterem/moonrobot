@@ -21,7 +21,7 @@ import botapp.views
 
 urlpatterns = [
     path(
-        settings.MOONROBOT_TELEGRAM_TOKEN,
+        settings.MRB_TELEGRAM_TOKEN,
         botapp.views.telegram_webhook,
         name="telegram_webhook",
     ),

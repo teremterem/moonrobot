@@ -1,24 +1,22 @@
 from django.db import models
 
 
-class User(models.Model):
+class MrbUser(models.Model):
     pass
 
 
-class Chat(models.Model):
+class MrbChat(models.Model):
     pass
 
 
-class Message(models.Model):
-    # class Meta:
-    #     abstract = True
-
+class MrbMessage(models.Model):
+    # unique_msg_id = models.CharField(max_length=255, unique=True)
     pass
 
 
-class UserMessage(Message):
+class MrbUserMessage(MrbMessage):
     pass
 
 
-class BotMessage(Message):
+class MrbBotMessage(MrbMessage):
     pass

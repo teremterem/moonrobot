@@ -30,16 +30,16 @@ class MoonRobotRequest(Request):
 
 
 bot = Bot(
-    settings.MOONROBOT_TELEGRAM_TOKEN,
+    settings.MRB_TELEGRAM_TOKEN,
     request=MoonRobotRequest(),
 )
-bot.set_webhook(settings.MOONROBOT_TELEGRAM_WEBHOOK)
+bot.set_webhook(settings.MRB_TELEGRAM_WEBHOOK)
 
 update_queue = Queue()
 dispatcher = Dispatcher(
     bot,
     update_queue,
-    workers=settings.MOONROBOT_WORKERS,
+    workers=settings.MRB_WORKERS,
 )
 
 

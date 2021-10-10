@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from .models import User, Chat, Message, UserMessage, BotMessage
+from .models import MrbUser, MrbChat, MrbMessage, MrbUserMessage, MrbBotMessage
 
-admin.site.register(User)
-admin.site.register(Chat)
-admin.site.register(Message)
-admin.site.register(UserMessage)
-admin.site.register(BotMessage)
+admin.site.register(MrbUser)
+admin.site.register(MrbChat)
+admin.site.register(MrbMessage)
+admin.site.register(MrbUserMessage)
+admin.site.register(MrbBotMessage)

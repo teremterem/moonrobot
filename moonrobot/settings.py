@@ -12,14 +12,14 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
-MOONROBOT_TELEGRAM_TOKEN = os.environ['MOONROBOT_TELEGRAM_TOKEN']
-MOONROBOT_WEBHOOK_HOST = os.environ['MOONROBOT_WEBHOOK_HOST']
-MOONROBOT_TELEGRAM_WEBHOOK = f"https://{MOONROBOT_WEBHOOK_HOST}/{MOONROBOT_TELEGRAM_TOKEN}"
+MRB_TELEGRAM_TOKEN = os.environ['MRB_TELEGRAM_TOKEN']
+MRB_WEBHOOK_HOST = os.environ['MRB_WEBHOOK_HOST']
+MRB_TELEGRAM_WEBHOOK = f"https://{MRB_WEBHOOK_HOST}/{MRB_TELEGRAM_TOKEN}"
 
-MOONROBOT_NOTION_TOKEN = os.environ['MOONROBOT_NOTION_TOKEN']
-MRBT_ENTRYPOINTS_DB_ID = os.environ['MRBT_ENTRYPOINTS_DB_ID']
+MRB_NOTION_TOKEN = os.environ['MRB_NOTION_TOKEN']
+MRB_ENTRYPOINTS_DB_ID = os.environ['MRB_ENTRYPOINTS_DB_ID']
 
-MOONROBOT_WORKERS = int(os.getenv('MOONROBOT_WORKERS') or 4)
+MRB_WORKERS = int(os.getenv('MRB_WORKERS') or 4)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-rbjeml#e1e8ujpy8i2%*-mprrqb1q29=3rpt3t1&d)yxd&5-va
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [MOONROBOT_WEBHOOK_HOST]
+ALLOWED_HOSTS = [MRB_WEBHOOK_HOST]
 
 # Application definition
 
