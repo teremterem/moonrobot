@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import MrbUser, MrbChat, MrbMessage, MrbUserMessage, MrbBotMessage
+from moonrobot.models import MrbUser, MrbChat, MrbMessage, MrbUserMessage, MrbBotMessage
 
 admin.site.register(MrbUser)
 admin.site.register(MrbChat)
