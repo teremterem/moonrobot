@@ -24,7 +24,7 @@ def handle_everything():
 
 
 handler_thread = Thread(target=handle_everything, daemon=True)  # TODO oleksandr: is daemon=True a bad idea ?
-handler_thread.start()
+handler_thread.start()  # TODO oleksandr: use a pool of workers ?
 
 
 class MoonRobotRequest(Request):
