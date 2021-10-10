@@ -49,9 +49,9 @@ class MoonRobotRequest(Request):
         logger.warning('\nBOT: %s\n\n%s', url_suffix, pformat(data))  # TODO oleksandr: switch to debug or info
 
         resp_json = super().post(url, data, timeout=timeout)
-        resp_msg = Message.de_json(resp_json, get_bot())
 
         if url_suffix != '/setWebhook':
+            resp_msg = Message.de_json(resp_json, get_bot())
             mrb_bot_message = MrbBotMessage(
                 plain_text=resp_msg.text,
                 url_suffix=url_suffix,
