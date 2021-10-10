@@ -1,5 +1,24 @@
 from django.db import models
 
 
-class Dummy(models.Model):
-    tetetext = models.CharField(max_length=200)
+class User(models.Model):
+    pass
+
+
+class Chat(models.Model):
+    pass
+
+
+class Message(models.Model):
+    # class Meta:
+    #     abstract = True
+
+    pass
+
+
+class UserMessage(Message):
+    pass
+
+
+class BotMessage(Message):
+    pass
