@@ -40,7 +40,7 @@ if DEBUG:
 # Application definition
 
 INSTALLED_APPS = [
-    'moonrobot.apps.BotappConfig',
+    'moonrobot',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
