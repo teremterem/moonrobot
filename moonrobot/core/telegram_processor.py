@@ -29,7 +29,7 @@ _handler_thread.start()  # TODO oleksandr: use a pool of workers ?
 _bot = None
 
 
-def get_bot():
+def get_bot():  # TODO oleksandr: is it thread safe ?
     global _bot
 
     if not _bot:
