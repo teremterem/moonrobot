@@ -1,6 +1,5 @@
 import html
 import logging
-from pprint import pformat
 
 import requests
 from django.conf import settings
@@ -70,5 +69,5 @@ def fetch_entrypoint_dict():
         value = collect_html_text(res['properties']['Message']['rich_text'])
         entrypoints_dict[key] = value
 
-    logger.warning('\nENTRY POINTS:\n\n%s\n', pformat(entrypoints_dict))  # TODO oleksandr: switch to debug or info
+    # logger.warning('\nENTRY POINTS:\n\n%s\n', pformat(entrypoints_dict))  # TODO oleksandr: switch to debug or info
     return entrypoints_dict
