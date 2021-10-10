@@ -20,8 +20,10 @@ class MrbMessage(NotionSynchable):
 
 
 class MrbUserMessage(MrbMessage):
-    pass
+    update_payload = models.JSONField(null=True, blank=True)
 
 
 class MrbBotMessage(MrbMessage):
-    pass
+    url_suffix = models.TextField(null=True, blank=True)
+    request_payload = models.JSONField(null=True, blank=True)
+    response_payload = models.JSONField(null=True, blank=True)
