@@ -17,12 +17,12 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 
-import botapp.views
+import moonrobot.views
 
 urlpatterns = [
     path(
         settings.MRB_TELEGRAM_TOKEN,
-        botapp.views.telegram_webhook,
+        moonrobot.views.telegram_webhook,
         name="telegram_webhook",
     ),
     path('admin/', admin.site.urls),
