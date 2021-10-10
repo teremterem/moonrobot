@@ -34,6 +34,8 @@ SECRET_KEY = 'django-insecure-rbjeml#e1e8ujpy8i2%*-mprrqb1q29=3rpt3t1&d)yxd&5-va
 DEBUG = True
 
 ALLOWED_HOSTS = [MRB_WEBHOOK_HOST]
+if DEBUG:
+    ALLOWED_HOSTS.append('localhost')
 
 # Application definition
 

@@ -10,7 +10,7 @@ class MrbChat(models.Model):
 
 
 class MrbMessage(models.Model):
-    # unique_msg_id = models.CharField(max_length=255, unique=True)
+    # unique_msg_id = models.CharField(max_length=63, unique=True)
     pass
 
 
