@@ -10,7 +10,7 @@ from telegram import Update
 from telegram.utils.request import Request
 from telegram.utils.types import JSONDict
 
-from moonrobot.moonrobot_core.update_handler import handle_telegram_update
+from moonrobot.core.update_handler import handle_telegram_update
 
 logger = logging.getLogger(__name__)
 

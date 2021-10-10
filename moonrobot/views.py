@@ -4,7 +4,7 @@ import logging
 from django.http import HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 
-from moonrobot.moonrobot_core.telegram_processor import update_queue
+from moonrobot.core.telegram_processor import update_queue
 
 logger = logging.getLogger(__name__)
 
