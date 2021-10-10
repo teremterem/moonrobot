@@ -4,16 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-python-telegram-bot = "~=13.7"
+python-telegram-bot-raw = "~=13.7"
 requests = "~=2.26"
 django = "~=3.2"
 
 [dev-packages]
-jupyterlab = "*"
-ipython = "*"
 pytest = "~=6.2"
 pytest-cov = "*"
+pytest-xdist = "*"
 python-dotenv = "*"
+ipython = "*"
+jupyterlab = "*"
 jupyterlab-kite = ">=2.0.2"
 
 [requires]

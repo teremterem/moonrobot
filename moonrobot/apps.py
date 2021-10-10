@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 
 
-class BotappConfig(AppConfig):
+class MoonRobotConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'botapp'
+    name = 'moonrobot'
+    verbose_name = 'MoonRobot'

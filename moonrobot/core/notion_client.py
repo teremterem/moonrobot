@@ -15,7 +15,7 @@ def request_notion(uri: str, body_json=None) -> JSONDict:
     with requests.post(
             url,
             headers={
-                'Authorization': f"Bearer {settings.MOONROBOT_NOTION_TOKEN}",
+                'Authorization': f"Bearer {settings.MRB_NOTION_TOKEN}",
                 'Notion-Version': '2021-08-16',
             },
             json=body_json or {},
@@ -62,7 +62,7 @@ def collect_html_text(rich_text_list):
 
 
 def fetch_entrypoint_dict():
-    entrypoints_db_content = query_notion_db(settings.MRBT_ENTRYPOINTS_DB_ID)
+    entrypoints_db_content = query_notion_db(settings.MRB_ENTRYPOINTS_DB_ID)
 
     entrypoints_dict = {}
     for res in entrypoints_db_content['results']:

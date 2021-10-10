@@ -1,4 +1,4 @@
-"""moonrobot URL Configuration
+"""moonrobot_django URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -17,12 +17,12 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 
-import botapp.views
+import moonrobot.views
 
 urlpatterns = [
     path(
-        settings.MOONROBOT_TELEGRAM_TOKEN,
-        botapp.views.telegram_webhook,
+        settings.MRB_TELEGRAM_TOKEN,
+        moonrobot.views.telegram_webhook,
         name="telegram_webhook",
     ),
     path('admin/', admin.site.urls),
