@@ -5,6 +5,9 @@ class NotionSynchable(models.Model):
     class Meta:
         abstract = True
 
+    notion_synched = models.BooleanField(db_index=True, default=False)
+    notion_id = models.TextField(blank=True, null=True)
+
 
 class MrbUser(NotionSynchable):
     pass
@@ -16,14 +19,14 @@ class MrbChat(NotionSynchable):
 
 class MrbMessage(NotionSynchable):
     # unique_msg_id = models.CharField(max_length=63, unique=True)
-    plain_text = models.TextField(null=True, blank=True)
+    plain_text = models.TextField(blank=True, null=True)
 
 
 class MrbUserMessage(MrbMessage):
-    update_payload = models.JSONField(null=True, blank=True)
+    update_payload = models.JSONField(blank=True, null=True)
 
 
 class MrbBotMessage(MrbMessage):
-    url_suffix = models.TextField(null=True, blank=True)
-    request_payload = models.JSONField(null=True, blank=True)
-    response_payload = models.JSONField(null=True, blank=True)
+    url_suffix = models.TextField(blank=True, null=True)
+    request_payload = models.JSONField(blank=True, null=True)
+    response_payload = models.JSONField(blank=True, null=True)

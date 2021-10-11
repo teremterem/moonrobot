@@ -3,7 +3,7 @@ import logging
 from telegram import Bot
 from telegram import Update, ParseMode
 
-from moonrobot.core.notion_client import fetch_entrypoint_dict
+from moonrobot.core.notion.notion_client import fetch_entrypoint_dict
 
 logger = logging.getLogger(__name__)
 

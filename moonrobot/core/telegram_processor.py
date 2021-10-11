@@ -24,8 +24,12 @@ def _handle_everything():
         handle_telegram_update_json(update_json)
 
 
-_handler_thread = Thread(target=_handle_everything, daemon=True)  # TODO oleksandr: is daemon=True a bad idea ?
-_handler_thread.start()  # TODO oleksandr: use a pool of workers ?
+_telegram_handler_thread = Thread(
+    name='_telegram_handler_thread',
+    target=_handle_everything,
+    daemon=True,  # TODO oleksandr: is daemon=True a bad idea ?
+)
+_telegram_handler_thread.start()  # TODO oleksandr: use a pool of workers ?
 _bot = None
 
 
