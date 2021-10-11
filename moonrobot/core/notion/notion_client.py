@@ -1,5 +1,6 @@
 import html
 import logging
+from typing import Collection
 
 import requests
 from django.conf import settings
@@ -29,12 +30,16 @@ def query_notion_db(database_id: str) -> JSONDict:
     return request_notion(f"databases/{database_id}/query")
 
 
-def collect_plain_text(rich_text_list):
+def create_notion_page(body: JSONDict) -> JSONDict:
+    return request_notion('pages', body_json=body)
+
+
+def collect_plain_text(rich_text_list: Collection[JSONDict]) -> str:
     text = ''.join([i['plain_text'] for i in rich_text_list])
     return text
 
 
-def collect_html_text(rich_text_list):
+def collect_html_text(rich_text_list: Collection[JSONDict]) -> str:
     def decorate_piece(piece):
         piece_text = html.escape(piece['text']['content'])
         piece_annotations = piece['annotations']
@@ -60,8 +65,8 @@ def collect_html_text(rich_text_list):
     return text
 
 
-def fetch_entrypoint_dict():
-    entrypoints_db_content = query_notion_db(settings.MRB_ENTRYPOINTS_DB_ID)
+def fetch_entrypoint_dict() -> JSONDict:
+    entrypoints_db_content = query_notion_db(settings.MRB_NOTION_ENTRYPOINTS_DB_ID)
 
     entrypoints_dict = {}
     for res in entrypoints_db_content['results']:

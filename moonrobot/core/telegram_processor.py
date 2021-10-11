@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 update_queue = Queue()
 
 
-def _handle_everything():
+def _handle_everything() -> None:
     while True:
         update_json = update_queue.get()
         handle_telegram_update_json(update_json)
@@ -34,7 +34,7 @@ _telegram_handler_thread.start()  # TODO oleksandr: use a pool of workers ?
 _bot = None
 
 
-def get_bot():  # TODO oleksandr: is it thread safe ?
+def get_bot() -> Bot:  # TODO oleksandr: is it thread safe ?
     global _bot
 
     if not _bot:
@@ -75,7 +75,7 @@ class MoonRobotRequest(Request):
 
         logger.warning('\nSERVER RESPONSE:\n\n%s\n', pformat(resp_json))  # TODO oleksandr: switch to debug or info
 
-        notion_db_sync_event.set()
+        notion_db_sync_event.set()  # TODO oleksandr: use some sort of a lock to do this ?
         return resp_json
 
 
@@ -84,7 +84,7 @@ class MoonRobotRequest(Request):
 get_bot()
 
 
-def handle_telegram_update_json(update_json: JSONDict):
+def handle_telegram_update_json(update_json: JSONDict) -> None:
     logger.warning('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))  # TODO oleksandr: switch to debug or info
 
     update = Update.de_json(update_json, get_bot())
@@ -95,5 +95,7 @@ def handle_telegram_update_json(update_json: JSONDict):
         update_payload=update_json,
     )
     mrb_user_message.save()
+
+    notion_db_sync_event.set()  # TODO oleksandr: use some sort of a lock to do this ?
 
     handle_telegram_update(update, get_bot())
