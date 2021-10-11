@@ -72,6 +72,11 @@ class MoonRobotRequest(Request):
         return resp_json
 
 
+# TODO oleksandr: figure how to only load the bot when server is started and not during othe operations like
+#  `python manage.py makemigrations`
+get_bot()
+
+
 def handle_telegram_update_json(update_json: JSONDict):
     logger.warning('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))  # TODO oleksandr: switch to debug or info
 
