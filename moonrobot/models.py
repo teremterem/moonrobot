@@ -20,6 +20,7 @@ class MrbChat(NotionSynchable):
 class MrbMessage(NotionSynchable):
     # unique_msg_id = models.CharField(max_length=63, unique=True)
     plain_text = models.TextField(blank=True, null=True)
+    from_user = models.BooleanField()
 
 
 class MrbUserMessage(MrbMessage):

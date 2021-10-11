@@ -58,6 +58,7 @@ class MoonRobotRequest(Request):
             resp_msg = Message.de_json(resp_json, get_bot())
             mrb_bot_message = MrbBotMessage(
                 plain_text=resp_msg.text,
+                from_user=False,
                 url_suffix=url_suffix,
                 request_payload=data,
                 response_payload=resp_json,
@@ -88,6 +89,7 @@ def handle_telegram_update_json(update_json: JSONDict):
 
     mrb_user_message = MrbUserMessage(
         plain_text=update.effective_message.text,
+        from_user=True,
         update_payload=update_json,
     )
     mrb_user_message.save()
