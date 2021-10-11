@@ -10,6 +10,7 @@ from telegram import Update
 from telegram.utils.request import Request
 from telegram.utils.types import JSONDict
 
+from moonrobot.core.notion.notion_sync import notion_db_sync_event
 from moonrobot.core.update_handler import handle_telegram_update
 from moonrobot.models import MrbBotMessage, MrbUserMessage
 
@@ -18,18 +19,22 @@ logger = logging.getLogger(__name__)
 update_queue = Queue()
 
 
-def _handle_everything():
+def _handle_everything() -> None:
     while True:
         update_json = update_queue.get()
         handle_telegram_update_json(update_json)
 
 
-_handler_thread = Thread(target=_handle_everything, daemon=True)  # TODO oleksandr: is daemon=True a bad idea ?
-_handler_thread.start()  # TODO oleksandr: use a pool of workers ?
+_telegram_handler_thread = Thread(
+    name='_telegram_handler_thread',
+    target=_handle_everything,
+    daemon=True,  # TODO oleksandr: is daemon=True a bad idea ?
+)
+_telegram_handler_thread.start()  # TODO oleksandr: use a pool of workers ?
 _bot = None
 
 
-def get_bot():  # TODO oleksandr: is it thread safe ?
+def get_bot() -> Bot:  # TODO oleksandr: is it thread safe ?
     global _bot
 
     if not _bot:
@@ -54,6 +59,7 @@ class MoonRobotRequest(Request):
             resp_msg = Message.de_json(resp_json, get_bot())
             mrb_bot_message = MrbBotMessage(
                 plain_text=resp_msg.text,
+                from_user=False,
                 url_suffix=url_suffix,
                 request_payload=data,
                 response_payload=resp_json,
@@ -69,18 +75,27 @@ class MoonRobotRequest(Request):
 
         logger.warning('\nSERVER RESPONSE:\n\n%s\n', pformat(resp_json))  # TODO oleksandr: switch to debug or info
 
+        notion_db_sync_event.set()  # TODO oleksandr: use some sort of a lock to do this ?
         return resp_json
 
 
-def handle_telegram_update_json(update_json: JSONDict):
+# TODO oleksandr: figure how to only load the bot when server is started and not during othe operations like
+#  `python manage.py makemigrations`
+get_bot()
+
+
+def handle_telegram_update_json(update_json: JSONDict) -> None:
     logger.warning('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))  # TODO oleksandr: switch to debug or info
 
     update = Update.de_json(update_json, get_bot())
 
     mrb_user_message = MrbUserMessage(
         plain_text=update.effective_message.text,
+        from_user=True,
         update_payload=update_json,
     )
     mrb_user_message.save()
+
+    notion_db_sync_event.set()  # TODO oleksandr: use some sort of a lock to do this ?
 
     handle_telegram_update(update, get_bot())
