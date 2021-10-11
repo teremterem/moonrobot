@@ -10,6 +10,7 @@ from telegram import Update
 from telegram.utils.request import Request
 from telegram.utils.types import JSONDict
 
+from moonrobot.core.notion.notion_sync import notion_db_sync_event
 from moonrobot.core.update_handler import handle_telegram_update
 from moonrobot.models import MrbBotMessage, MrbUserMessage
 
@@ -74,6 +75,7 @@ class MoonRobotRequest(Request):
 
         logger.warning('\nSERVER RESPONSE:\n\n%s\n', pformat(resp_json))  # TODO oleksandr: switch to debug or info
 
+        notion_db_sync_event.set()
         return resp_json
 
 
