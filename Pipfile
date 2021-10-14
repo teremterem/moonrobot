@@ -12,10 +12,13 @@ django = "~=3.2"
 pytest = "~=6.2"
 pytest-cov = "*"
 pytest-xdist = "*"
+pytest-django = "*"
+pytest-env = "*"
 python-dotenv = "*"
 ipython = "*"
 jupyterlab = "*"
 jupyterlab-kite = ">=2.0.2"
+ipdb = "*"
 
 [requires]
 python_version = "3.8"

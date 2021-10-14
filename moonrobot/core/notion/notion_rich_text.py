@@ -34,3 +34,7 @@ def collect_html_text(rich_text_list: Collection[JSONDict]) -> str:
 
     text = ''.join([decorate_piece(i) for i in rich_text_list])
     return text
+
+
+def rich_text_from_telegram_annotations():
+    pass
