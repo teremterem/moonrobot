@@ -1,5 +1,6 @@
+import copy
 import html
-from typing import Collection, List
+from typing import Collection, List, Optional, Callable
 
 # noinspection PyPackageRequirements
 from telegram import MessageEntity
@@ -38,42 +39,89 @@ def collect_html_text(rich_text_list: Collection[JSONDict]) -> str:
     return text
 
 
-def _inject_entity(text_pieces: Collection[str], entity: JSONDict):
-    entity_start = int(entity['offset'])
-    entity_length = int(entity['length'])
+def _create_rich_text_entry(text: str, href: Optional[str] = None) -> JSONDict:
+    if href:
+        link = {'url': href}
+    else:
+        link = None
+
+    return {
+        'annotations': {
+            'bold': False,
+            'code': False,
+            'color': 'default',
+            'italic': False,
+            'strikethrough': False,
+            'underline': False,
+        },
+        'href': href,
+        'plain_text': text,
+        'text': {
+            'content': text,
+            'link': link,
+        },
+        'type': 'text',
+    }
+
+
+def _clone_rich_text_entry(
+        original_entry: JSONDict,
+        new_text: str,
+        injecter: Optional[Callable[[JSONDict], None]] = None,
+) -> JSONDict:
+    new_entry = copy.deepcopy(original_entry)
+    new_entry['plain_text'] = new_text
+    new_entry['text']['content'] = new_text
+
+    if injecter:
+        injecter(new_entry)
+
+    return new_entry
+
+
+def _inject_entity(
+        rich_text_entries: Collection[JSONDict],
+        entity_start: int,
+        entity_length: int,
+        injecter: Callable[[JSONDict], None],
+):
     entity_end = entity_start + entity_length
 
     piece_start = 0
     new_text_pieces = []
-    for piece_num, text_piece in enumerate(text_pieces):
+    for piece_num, rich_text_entry in enumerate(rich_text_entries):
+        text_piece = rich_text_entry['plain_text']
+
         piece_end = piece_start + len(text_piece)
         entity_rel_start = entity_start - piece_start
         entity_rel_end = entity_end - piece_start
 
         if entity_start <= piece_start and piece_end <= entity_end:
             # the entity fully encloses the piece
-            new_text_pieces.append(text_piece)  # TODO mark this piece
+            new_text_pieces.append(
+                _clone_rich_text_entry(rich_text_entry, text_piece, injecter=injecter),
+            )
 
         elif piece_start < entity_start and entity_end < piece_end:
             # the entity sits inside the piece in such a way that it splits the piece in three
             new_text_pieces.extend([
-                text_piece[:entity_rel_start],
-                text_piece[entity_rel_start:entity_rel_end],  # TODO mark this piece
-                text_piece[entity_rel_end:],
+                _clone_rich_text_entry(rich_text_entry, text_piece[:entity_rel_start]),
+                _clone_rich_text_entry(rich_text_entry, text_piece[entity_rel_start:entity_rel_end], injecter=injecter),
+                _clone_rich_text_entry(rich_text_entry, text_piece[entity_rel_end:]),
             ])
 
         elif entity_start <= piece_start < entity_end < piece_end:
             # the entity overlaps with the first half of the piece
             new_text_pieces.extend([
-                text_piece[:entity_rel_end],  # TODO mark this piece
-                text_piece[entity_rel_end:],
+                _clone_rich_text_entry(rich_text_entry, text_piece[:entity_rel_end], injecter=injecter),
+                _clone_rich_text_entry(rich_text_entry, text_piece[entity_rel_end:]),
             ])
 
         elif piece_start < entity_start < piece_end <= entity_end:
             # the entity overlaps with the second half of the piece
             new_text_pieces.extend([
-                text_piece[:entity_rel_start],
-                text_piece[entity_rel_start:],  # TODO mark this piece
+                _clone_rich_text_entry(rich_text_entry, text_piece[:entity_rel_start]),
+                _clone_rich_text_entry(rich_text_entry, text_piece[entity_rel_start:], injecter=injecter),
             ])
 
         else:
