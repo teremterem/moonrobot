@@ -55,7 +55,8 @@ class MoonRobotRequest(Request):
     def post(self, url: str, data: JSONDict, timeout: float = None) -> Union[JSONDict, bool]:
         url_suffix = url.split(settings.MRB_TELEGRAM_TOKEN)[-1]
 
-        logger.info('\nBOT: %s\n\n%s', url_suffix, pformat(data))
+        if logger.isEnabledFor(logging.INFO):
+            logger.info('\nBOT: %s\n\n%s', url_suffix, pformat(data))
 
         resp_json = super().post(url, data, timeout=timeout)
 
@@ -77,7 +78,8 @@ class MoonRobotRequest(Request):
             #     )
             #     # pprint(ent.to_dict())
 
-        logger.info('\nSERVER RESPONSE:\n\n%s\n', pformat(resp_json))
+        if logger.isEnabledFor(logging.INFO):
+            logger.info('\nSERVER RESPONSE:\n\n%s\n', pformat(resp_json))
 
         notion_db_sync_event.set()  # TODO oleksandr: use some sort of a lock to do this ?
         return resp_json
@@ -94,7 +96,8 @@ def handle_telegram_update_json(update_json: JSONDict) -> None:
 
     # noinspection PyBroadException
     try:
-        logger.info('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))
+        if logger.isEnabledFor(logging.INFO):
+            logger.info('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))
 
         update = Update.de_json(update_json, bot)
 
