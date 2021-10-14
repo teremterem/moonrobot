@@ -48,15 +48,15 @@ def _inject_entity(text_pieces: Collection[str], entity: JSONDict):
     for piece_num, text_piece in enumerate(text_pieces):
         piece_end = piece_start + len(text_piece)
 
-        if piece_start < entity_end and piece_end > entity_start:
-            # the entity overlaps with the piece one way or another
-            if piece_start == entity_start and piece_end == entity_end:
-                # the entity completely coincides with the piece
-                # TODO mark the piece
-                new_text_pieces.append(text_piece)
+        if piece_start >= entity_start and piece_end <= entity_end:
+            # the entity fully encloses the piece
+            # TODO mark the piece
+            new_text_pieces.append(text_piece)
 
-            else:
-                pass
+        elif piece_start < entity_end and piece_end > entity_start:
+            # the entity overlaps with the piece one way or another
+            pass
+            # TODO
 
         else:
             # the entity does not overlap with the piece (it's either completely before or completely after the piece)
