@@ -84,7 +84,5 @@ def test_rich_text_from_telegram_annotations(
         fake_bot: Bot,
 ) -> None:
     entities_ptb = MessageEntity.de_list(entities, fake_bot)
-
     actual = rich_text_from_telegram_annotations(text, entities_ptb)
-
     assert expected == actual
