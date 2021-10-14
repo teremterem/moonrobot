@@ -47,16 +47,34 @@ def _inject_entity(text_pieces: Collection[str], entity: JSONDict):
     new_text_pieces = []
     for piece_num, text_piece in enumerate(text_pieces):
         piece_end = piece_start + len(text_piece)
+        entity_rel_start = entity_start - piece_start
+        entity_rel_end = entity_end - piece_start
 
         if piece_start >= entity_start and piece_end <= entity_end:
             # the entity fully encloses the piece
-            # TODO mark the piece
-            new_text_pieces.append(text_piece)
+            new_text_pieces.append(text_piece)  # TODO mark this piece
 
-        elif piece_start < entity_end and piece_end > entity_start:
-            # the entity overlaps with the piece one way or another
-            pass
-            # TODO
+        elif piece_start < entity_start and piece_end > entity_end:
+            # the entity sits inside the piece in such a way that it splits the piece in three
+            new_text_pieces.extend([
+                text_piece[:entity_rel_start],
+                text_piece[entity_rel_start:entity_rel_end],  # TODO mark this piece
+                text_piece[entity_rel_end:],
+            ])
+
+        elif piece_start >= entity_start and piece_end > entity_end:
+            # the entity overlaps with the first half of the piece
+            new_text_pieces.extend([
+                text_piece[:entity_rel_end],  # TODO mark this piece
+                text_piece[entity_rel_end:],
+            ])
+
+        elif piece_start < entity_start and piece_end <= entity_end:
+            # the entity overlaps with the second half of the piece
+            new_text_pieces.extend([
+                text_piece[:entity_rel_start],
+                text_piece[entity_rel_start:],  # TODO mark this piece
+            ])
 
         else:
             # the entity does not overlap with the piece (it's either completely before or completely after the piece)
