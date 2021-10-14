@@ -18,28 +18,28 @@ from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annot
 
             ['aa', 'a', 'bbb', 'ccc'],
     ),
-    (
+    (  # 1
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 3, 'offset': 0},
 
             ['aaa', 'bbb', 'ccc'],
     ),
-    (
+    (  # 2
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 4, 'offset': 0},
 
             ['aaa', 'b', 'bb', 'ccc'],
     ),
-    (
+    (  # 3
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 6, 'offset': 0},
 
             ['aaa', 'bbb', 'ccc'],
     ),
-    (
+    (  # 4
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 9, 'offset': 0},
@@ -67,21 +67,21 @@ from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annot
 
             ['aaa', 'bbb', 'cc', 'c'],
     ),
-    (
+    (  # 8
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 3, 'offset': 6},
 
             ['aaa', 'bbb', 'ccc'],
     ),
-    (
+    (  # 9
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 2, 'offset': 7},
 
             ['aaa', 'bbb', 'c', 'cc'],
     ),
-    (
+    (  # 10
             ['so', 'me ', 'three ', 'pieces', ' of text', '..', '.'],
 
             {'length': 11, 'offset': 8},
