@@ -1,9 +1,11 @@
 import html
 import logging
+from pprint import pformat
 from typing import Collection
 
 import requests
 from django.conf import settings
+# noinspection PyPackageRequirements
 from telegram.utils.types import JSONDict
 
 logger = logging.getLogger(__name__)
@@ -22,7 +24,8 @@ def request_notion(uri: str, body_json=None) -> JSONDict:
     ) as resp:
         resp_json = resp.json()
 
-    # logger.warning('\nNOTION: %s\n\n%s\n', url, pformat(resp_json))  # TODO oleksandr: switch to debug or info
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug('\nNOTION: %s\n\n%s\n', url, pformat(resp_json))
     return resp_json
 
 
@@ -74,5 +77,6 @@ def fetch_entrypoint_dict() -> JSONDict:
         value = collect_html_text(res['properties']['Message']['rich_text'])
         entrypoints_dict[key] = value
 
-    # logger.warning('\nENTRY POINTS:\n\n%s\n', pformat(entrypoints_dict))  # TODO oleksandr: switch to debug or info
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug('\nENTRY POINTS:\n\n%s\n', pformat(entrypoints_dict))
     return entrypoints_dict

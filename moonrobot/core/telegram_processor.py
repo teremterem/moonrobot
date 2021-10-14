@@ -5,9 +5,13 @@ from threading import Thread
 from typing import Union
 
 from django.conf import settings
+# noinspection PyPackageRequirements
 from telegram import Bot, Message
+# noinspection PyPackageRequirements
 from telegram import Update
+# noinspection PyPackageRequirements
 from telegram.utils.request import Request
+# noinspection PyPackageRequirements
 from telegram.utils.types import JSONDict
 
 from moonrobot.core.notion.notion_sync import notion_db_sync_event
@@ -51,7 +55,8 @@ class MoonRobotRequest(Request):
     def post(self, url: str, data: JSONDict, timeout: float = None) -> Union[JSONDict, bool]:
         url_suffix = url.split(settings.MRB_TELEGRAM_TOKEN)[-1]
 
-        logger.warning('\nBOT: %s\n\n%s', url_suffix, pformat(data))  # TODO oleksandr: switch to debug or info
+        if logger.isEnabledFor(logging.INFO):
+            logger.info('\nBOT: %s\n\n%s', url_suffix, pformat(data))
 
         resp_json = super().post(url, data, timeout=timeout)
 
@@ -73,7 +78,8 @@ class MoonRobotRequest(Request):
             #     )
             #     # pprint(ent.to_dict())
 
-        logger.warning('\nSERVER RESPONSE:\n\n%s\n', pformat(resp_json))  # TODO oleksandr: switch to debug or info
+        if logger.isEnabledFor(logging.INFO):
+            logger.info('\nSERVER RESPONSE:\n\n%s\n', pformat(resp_json))
 
         notion_db_sync_event.set()  # TODO oleksandr: use some sort of a lock to do this ?
         return resp_json
@@ -85,17 +91,32 @@ get_bot()
 
 
 def handle_telegram_update_json(update_json: JSONDict) -> None:
-    logger.warning('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))  # TODO oleksandr: switch to debug or info
+    bot = get_bot()
+    update = None
 
-    update = Update.de_json(update_json, get_bot())
+    # noinspection PyBroadException
+    try:
+        if logger.isEnabledFor(logging.INFO):
+            logger.info('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))
 
-    mrb_user_message = MrbUserMessage(
-        plain_text=update.effective_message.text,
-        from_user=True,
-        update_payload=update_json,
-    )
-    mrb_user_message.save()
+        update = Update.de_json(update_json, bot)
 
-    notion_db_sync_event.set()  # TODO oleksandr: use some sort of a lock to do this ?
+        mrb_user_message = MrbUserMessage(
+            plain_text=update.effective_message.text,
+            from_user=True,
+            update_payload=update_json,
+        )
+        mrb_user_message.save()
 
-    handle_telegram_update(update, get_bot())
+        notion_db_sync_event.set()  # TODO oleksandr: use some sort of a lock to do this ?
+
+        handle_telegram_update(update, bot)
+    except Exception:
+        logger.exception('EXCEPTION WHILE PROCESSING A TELEGRAM UPDATE')
+
+        # noinspection PyBroadException
+        try:
+            if update and update.effective_chat:
+                update.effective_chat.send_message('Ouch! Something went wrong 🤖')
+        except Exception:
+            logger.debug('EXCEPTION WHILE REPORTING AN EXCEPTION', exc_info=True)
