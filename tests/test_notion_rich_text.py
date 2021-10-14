@@ -13,11 +13,11 @@ from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annot
 @pytest.mark.parametrize('text, entities, expected', [
     (
             'hello bold italic bold world',
-            [
-                {'length': 5, 'offset': 6, 'type': 'bold'},
-                {'length': 11, 'offset': 11, 'type': 'bold'},
-                {'length': 6, 'offset': 11, 'type': 'italic'},
-            ],
+
+            [{'length': 5, 'offset': 6, 'type': 'bold'},
+             {'length': 11, 'offset': 11, 'type': 'bold'},
+             {'length': 6, 'offset': 11, 'type': 'italic'}],
+
             [{'annotations': {'bold': False,
                               'code': False,
                               'color': 'default',
