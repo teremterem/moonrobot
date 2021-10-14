@@ -4,6 +4,7 @@ from threading import Event, Thread
 from django.conf import settings
 
 from moonrobot.core.notion.notion_client import create_notion_page
+from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annotations
 from moonrobot.models import MrbMessage
 
 notion_db_sync_event = Event()
@@ -13,6 +14,8 @@ def _sync_db_to_notion_continuously():
     while True:
         notion_db_sync_event.wait()
         notion_db_sync_event.clear()  # TODO oleksandr: this is terrible =\ use some sort of a lock to do this ?
+
+        # TODO oleksandr: guard with try/except
         _sync_db_to_notion()  # TODO oleksandr: sync only one object, not all at once (no loops inside)
         time.sleep(1)  # TODO oleksandr: make it configurable ?
 
@@ -38,22 +41,12 @@ def _sync_db_to_notion():
             'properties': {
                 'Name': [
                     {
-                        # 'title': {
                         'text': {
                             'content': 'USER' if message.from_user else 'BOT',
                         },
-                        # },
                     },
                 ],
-                'Message': [
-                    {
-                        # 'rich_text': {
-                        'text': {
-                            'content': message.plain_text,
-                        },
-                        # },
-                    },
-                ],
+                'Message': rich_text_from_telegram_annotations(message.plain_text or '', message.text_entities or []),
             },
         })
 
