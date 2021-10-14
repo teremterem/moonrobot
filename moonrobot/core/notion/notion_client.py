@@ -25,6 +25,7 @@ def request_notion(uri: str, body_json=None) -> JSONDict:
         resp_json = resp.json()
 
     if logger.isEnabledFor(logging.DEBUG):
+        # TODO oleksandr: use a different logging level if there is an error
         logger.debug('\nNOTION: %s\n\n%s\n', url, pformat(resp_json))
     return resp_json
 
