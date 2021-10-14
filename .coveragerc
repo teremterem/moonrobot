@@ -1,0 +1,11 @@
+[run]
+branch = True
+source = .
+omit =
+    tests/*
+#    moonrobot/migrations/*
+
+[report]
+# Regexes for lines to exclude from consideration
+exclude_lines =
+    raise NotImplementedError
