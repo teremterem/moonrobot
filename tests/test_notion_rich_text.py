@@ -81,23 +81,12 @@ def test_inject_entity(
     rich_text_entries = [_create_rich_text_entry(t) for t in text_pieces]
     expected_entries = []
 
-    at_least_one_marked = False
-    at_least_one_not_marked = False
     for e in expected:
         is_marked = isinstance(e, Marked)
-        if is_marked:
-            at_least_one_marked = True
-            expected_entry = _create_rich_text_entry(e.text)
-        else:
-            at_least_one_not_marked = True
-            expected_entry = _create_rich_text_entry(e)
 
+        expected_entry = _create_rich_text_entry(e.text if is_marked else e)
         expected_entry['annotations']['bold'] = is_marked
         expected_entries.append(expected_entry)
-
-    # test the test
-    assert at_least_one_marked
-    assert at_least_one_not_marked
 
     def _make_bold(entry: JSONDict) -> None:
         entry['annotations']['bold'] = True
