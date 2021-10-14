@@ -3,7 +3,6 @@ import html
 from typing import Collection, List, Optional, Callable
 
 # noinspection PyPackageRequirements
-from telegram import MessageEntity
 # noinspection PyPackageRequirements
 from telegram.utils.types import JSONDict
 
@@ -135,12 +134,14 @@ def _inject_entity_with_injecter(
 
 def _inject_entity(
         rich_text_entries: Collection[JSONDict],
-        entity: MessageEntity,
+        entity: JSONDict,
 ):
     # TODO oleksandr: support all the entity types there are at the intersection of Notion and Telegram
-    if entity.type == 'bold':
+    entity_type = entity['type']
+
+    if entity_type == 'bold':
         inj_key = 'bold'
-    elif entity.type == 'italic':
+    elif entity_type == 'italic':
         inj_key = 'italic'
     else:
         return rich_text_entries  # unknown entity type => skipping injection
@@ -148,11 +149,11 @@ def _inject_entity(
     def _inject(entry: JSONDict) -> None:
         entry['annotations'][inj_key] = True
 
-    new_entries = _inject_entity_with_injecter(rich_text_entries, entity.offset, entity.length, _inject)
+    new_entries = _inject_entity_with_injecter(rich_text_entries, int(entity['offset']), int(entity['length']), _inject)
     return new_entries
 
 
-def rich_text_from_telegram_entities(text: str, entities: Collection[MessageEntity]) -> List[JSONDict]:
+def rich_text_from_telegram_entities(text: str, entities: Collection[JSONDict]) -> List[JSONDict]:
     rich_text_entries = [_create_rich_text_entry(text)]
     for entity in entities:
         rich_text_entries = _inject_entity(rich_text_entries, entity)

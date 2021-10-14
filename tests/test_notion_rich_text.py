@@ -2,7 +2,6 @@ from typing import Collection, List, Any
 
 import pytest
 # noinspection PyPackageRequirements
-from telegram import MessageEntity, Bot
 # noinspection PyPackageRequirements
 from telegram.utils.types import JSONDict
 
@@ -167,8 +166,6 @@ def test_rich_text_from_telegram_entities(
         text: str,
         entities: List[JSONDict],
         expected: Collection[JSONDict],
-        fake_bot: Bot,
 ) -> None:
-    entities_ptb = MessageEntity.de_list(entities, fake_bot)
-    actual = rich_text_from_telegram_entities(text, entities_ptb)
+    actual = rich_text_from_telegram_entities(text, entities)
     assert expected == actual
