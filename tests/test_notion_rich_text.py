@@ -7,7 +7,7 @@ from telegram import MessageEntity, Bot
 from telegram.utils.types import JSONDict
 
 # noinspection PyProtectedMember
-from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annotations, _inject_entity, \
+from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_entities, _inject_entity, \
     _create_rich_text_entry
 
 
@@ -163,12 +163,12 @@ def test_inject_entity(
               'type': 'text'}],
     ),
 ])
-def test_rich_text_from_telegram_annotations(
+def test_rich_text_from_telegram_entities(
         text: str,
         entities: List[JSONDict],
         expected: Collection[JSONDict],
         fake_bot: Bot,
 ) -> None:
     entities_ptb = MessageEntity.de_list(entities, fake_bot)
-    actual = rich_text_from_telegram_annotations(text, entities_ptb)
+    actual = rich_text_from_telegram_entities(text, entities_ptb)
     assert expected == actual

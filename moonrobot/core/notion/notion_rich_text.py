@@ -133,7 +133,7 @@ def _inject_entity(
     return new_text_pieces
 
 
-def rich_text_from_telegram_annotations(text: str, entities: Collection[MessageEntity]) -> List[JSONDict]:
+def rich_text_from_telegram_entities(text: str, entities: Collection[MessageEntity]) -> List[JSONDict]:
     return [
         _create_rich_text_entry(text),
     ]

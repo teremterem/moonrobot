@@ -4,7 +4,7 @@ from threading import Event, Thread
 from django.conf import settings
 
 from moonrobot.core.notion.notion_client import create_notion_page
-from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annotations
+from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_entities
 from moonrobot.models import MrbMessage
 
 notion_db_sync_event = Event()
@@ -46,7 +46,7 @@ def _sync_db_to_notion():
                         },
                     },
                 ],
-                'Message': rich_text_from_telegram_annotations(message.plain_text or '', message.text_entities or []),
+                'Message': rich_text_from_telegram_entities(message.plain_text or '', message.text_entities or []),
             },
         })
 
