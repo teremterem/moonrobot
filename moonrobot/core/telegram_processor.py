@@ -21,8 +21,12 @@ update_queue = Queue()
 
 def _handle_everything() -> None:
     while True:
-        update_json = update_queue.get()
-        handle_telegram_update_json(update_json)
+        # noinspection PyBroadException
+        try:
+            update_json = update_queue.get()
+            handle_telegram_update_json(update_json)
+        except Exception:
+            logger.exception('EXCEPTION WHILE PROCESSING A TELEGRAM UPDATE')
 
 
 _telegram_handler_thread = Thread(
