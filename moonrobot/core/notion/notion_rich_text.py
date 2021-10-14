@@ -1,6 +1,8 @@
 import html
-from typing import Collection
+from typing import Collection, List
 
+# noinspection PyPackageRequirements
+from telegram import MessageEntity
 # noinspection PyPackageRequirements
 from telegram.utils.types import JSONDict
 
@@ -36,5 +38,65 @@ def collect_html_text(rich_text_list: Collection[JSONDict]) -> str:
     return text
 
 
-def rich_text_from_telegram_annotations():
-    pass
+# TODO TODO TODO
+dummy = [{'annotations': {'bold': False,
+                          'code': False,
+                          'color': 'default',
+                          'italic': False,
+                          'strikethrough': False,
+                          'underline': False},
+          'href': None,
+          'plain_text': 'hello ',
+          'text': {'content': 'hello ',
+                   'link': None},
+          'type': 'text'},
+         {'annotations': {'bold': True,
+                          'code': False,
+                          'color': 'default',
+                          'italic': False,
+                          'strikethrough': False,
+                          'underline': False},
+          'href': None,
+          'plain_text': 'bold ',
+          'text': {'content': 'bold ',
+                   'link': None},
+          'type': 'text'},
+         {'annotations': {'bold': True,
+                          'code': False,
+                          'color': 'default',
+                          'italic': True,
+                          'strikethrough': False,
+                          'underline': False},
+          'href': None,
+          'plain_text': 'italic',
+          'text': {'content': 'italic',
+                   'link': None},
+          'type': 'text'},
+         {'annotations': {'bold': True,
+                          'code': False,
+                          'color': 'default',
+                          'italic': False,
+                          'strikethrough': False,
+                          'underline': False},
+          'href': None,
+          'plain_text': ' bold',
+          'text': {'content': ' '
+                              'bold',
+                   'link': None},
+          'type': 'text'},
+         {'annotations': {'bold': False,
+                          'code': False,
+                          'color': 'default',
+                          'italic': False,
+                          'strikethrough': False,
+                          'underline': False},
+          'href': None,
+          'plain_text': ' world',
+          'text': {'content': ' '
+                              'world',
+                   'link': None},
+          'type': 'text'}]
+
+
+def rich_text_from_telegram_annotations(text: str, entities: Collection[MessageEntity]) -> List[JSONDict]:
+    return dummy  # TODO TODO TODO
