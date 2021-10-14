@@ -91,7 +91,6 @@ get_bot()
 
 
 def handle_telegram_update_json(update_json: JSONDict) -> None:
-    bot = get_bot()
     update = None
 
     # noinspection PyBroadException
@@ -99,7 +98,7 @@ def handle_telegram_update_json(update_json: JSONDict) -> None:
         if logger.isEnabledFor(logging.INFO):
             logger.info('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))
 
-        update = Update.de_json(update_json, bot)
+        update = Update.de_json(update_json, get_bot())
 
         mrb_user_message = MrbUserMessage(
             plain_text=update.effective_message.text,
@@ -110,7 +109,7 @@ def handle_telegram_update_json(update_json: JSONDict) -> None:
 
         notion_db_sync_event.set()  # TODO oleksandr: use some sort of a lock to do this ?
 
-        handle_telegram_update(update, bot)
+        handle_telegram_update(update, get_bot())
     except Exception:
         logger.exception('EXCEPTION WHILE PROCESSING A TELEGRAM UPDATE')
 
