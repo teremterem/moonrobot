@@ -79,7 +79,7 @@ def _clone_rich_text_entry(
     return new_entry
 
 
-def _inject_entity(
+def _inject_entity_with_injecter(
         rich_text_entries: Collection[JSONDict],
         entity_start: int,
         entity_length: int,
@@ -88,9 +88,9 @@ def _inject_entity(
     entity_end = entity_start + entity_length
 
     piece_start = 0
-    new_text_pieces = []
-    for piece_num, rich_text_entry in enumerate(rich_text_entries):
-        text_piece = rich_text_entry['plain_text']
+    new_entries = []
+    for piece_num, entry in enumerate(rich_text_entries):
+        text_piece = entry['plain_text']
 
         piece_end = piece_start + len(text_piece)
         entity_rel_start = entity_start - piece_start
@@ -98,42 +98,62 @@ def _inject_entity(
 
         if entity_start <= piece_start and piece_end <= entity_end:
             # the entity fully encloses the piece
-            new_text_pieces.append(
-                _clone_rich_text_entry(rich_text_entry, text_piece, injecter=injecter),
+            new_entries.append(
+                _clone_rich_text_entry(entry, text_piece, injecter=injecter),
             )
 
         elif piece_start < entity_start and entity_end < piece_end:
             # the entity sits inside the piece in such a way that it splits the piece in three
-            new_text_pieces.extend([
-                _clone_rich_text_entry(rich_text_entry, text_piece[:entity_rel_start]),
-                _clone_rich_text_entry(rich_text_entry, text_piece[entity_rel_start:entity_rel_end], injecter=injecter),
-                _clone_rich_text_entry(rich_text_entry, text_piece[entity_rel_end:]),
+            new_entries.extend([
+                _clone_rich_text_entry(entry, text_piece[:entity_rel_start]),
+                _clone_rich_text_entry(entry, text_piece[entity_rel_start:entity_rel_end], injecter=injecter),
+                _clone_rich_text_entry(entry, text_piece[entity_rel_end:]),
             ])
 
         elif entity_start <= piece_start < entity_end < piece_end:
             # the entity overlaps with the first half of the piece
-            new_text_pieces.extend([
-                _clone_rich_text_entry(rich_text_entry, text_piece[:entity_rel_end], injecter=injecter),
-                _clone_rich_text_entry(rich_text_entry, text_piece[entity_rel_end:]),
+            new_entries.extend([
+                _clone_rich_text_entry(entry, text_piece[:entity_rel_end], injecter=injecter),
+                _clone_rich_text_entry(entry, text_piece[entity_rel_end:]),
             ])
 
         elif piece_start < entity_start < piece_end <= entity_end:
             # the entity overlaps with the second half of the piece
-            new_text_pieces.extend([
-                _clone_rich_text_entry(rich_text_entry, text_piece[:entity_rel_start]),
-                _clone_rich_text_entry(rich_text_entry, text_piece[entity_rel_start:], injecter=injecter),
+            new_entries.extend([
+                _clone_rich_text_entry(entry, text_piece[:entity_rel_start]),
+                _clone_rich_text_entry(entry, text_piece[entity_rel_start:], injecter=injecter),
             ])
 
         else:
             # the entity does not overlap with the piece (it's either completely before or completely after the piece)
-            new_text_pieces.append(rich_text_entry)
+            new_entries.append(entry)
 
         piece_start = piece_end  # next piece start
 
-    return new_text_pieces
+    return new_entries
+
+
+def _inject_entity(
+        rich_text_entries: Collection[JSONDict],
+        entity: MessageEntity,
+):
+    # TODO oleksandr: support all the entity types there are at the intersection of Notion and Telegram
+    if entity.type == 'bold':
+        inj_key = 'bold'
+    elif entity.type == 'italic':
+        inj_key = 'italic'
+    else:
+        return rich_text_entries  # unknown entity type => skipping injection
+
+    def _inject(entry: JSONDict) -> None:
+        entry['annotations'][inj_key] = True
+
+    new_entries = _inject_entity_with_injecter(rich_text_entries, entity.offset, entity.length, _inject)
+    return new_entries
 
 
 def rich_text_from_telegram_entities(text: str, entities: Collection[MessageEntity]) -> List[JSONDict]:
-    return [
-        _create_rich_text_entry(text),
-    ]
+    rich_text_entries = [_create_rich_text_entry(text)]
+    for entity in entities:
+        rich_text_entries = _inject_entity(rich_text_entries, entity)
+    return rich_text_entries
