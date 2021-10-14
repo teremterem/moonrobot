@@ -19,79 +19,57 @@ class Marked:
 @pytest.mark.parametrize('text_pieces, entity, expected', [
     (  # 0
             ['aaa', 'bbb', 'ccc'],
-
             {'length': 2, 'offset': 0},
-
             [Marked('aa'), 'a', 'bbb', 'ccc'],
     ),
     (  # 1
             ['aaa', 'bbb', 'ccc'],
-
             {'length': 3, 'offset': 0},
-
             [Marked('aaa'), 'bbb', 'ccc'],
     ),
     (  # 2
             ['aaa', 'bbb', 'ccc'],
-
             {'length': 4, 'offset': 0},
-
             [Marked('aaa'), Marked('b'), 'bb', 'ccc'],
     ),
     (  # 3
             ['aaa', 'bbb', 'ccc'],
-
             {'length': 6, 'offset': 0},
-
             [Marked('aaa'), Marked('bbb'), 'ccc'],
     ),
     (  # 4
             ['aaa', 'bbb', 'ccc'],
-
             {'length': 9, 'offset': 0},
-
             [Marked('aaa'), Marked('bbb'), Marked('ccc')],
     ),
     (  # 5
             ['aaa', 'bbb', 'ccc'],
-
             {'length': 1, 'offset': 4},
-
             ['aaa', 'b', Marked('b'), 'b', 'ccc'],
     ),
     (  # 6
             ['aaa', 'bbb', 'ccc'],
-
             {'length': 4, 'offset': 4},
-
             ['aaa', 'b', Marked('bb'), Marked('cc'), 'c'],
     ),
     (  # 7
             ['aaa', 'bbb', 'ccc'],
-
             {'length': 2, 'offset': 6},
-
             ['aaa', 'bbb', Marked('cc'), 'c'],
     ),
     (  # 8
             ['aaa', 'bbb', 'ccc'],
-
             {'length': 3, 'offset': 6},
-
             ['aaa', 'bbb', Marked('ccc')],
     ),
     (  # 9
             ['aaa', 'bbb', 'ccc'],
-
             {'length': 2, 'offset': 7},
-
             ['aaa', 'bbb', 'c', Marked('cc')],
     ),
     (  # 10
             ['so', 'me ', 'three ', 'pieces', ' of text', '..', '.'],
-
             {'length': 11, 'offset': 8},
-
             ['so', 'me ', 'thr', Marked('ee '), Marked('pieces'), Marked(' o'), 'f text', '..', '.'],
     ),
 ])
