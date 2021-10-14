@@ -11,6 +11,76 @@ from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annot
 
 
 @pytest.mark.parametrize('text_pieces, entity, expected', [
+    (  # 0
+            ['aaa', 'bbb', 'ccc'],
+
+            {'length': 2, 'offset': 0},
+
+            ['aa', 'a', 'bbb', 'ccc'],
+    ),
+    (
+            ['aaa', 'bbb', 'ccc'],
+
+            {'length': 3, 'offset': 0},
+
+            ['aaa', 'bbb', 'ccc'],
+    ),
+    (
+            ['aaa', 'bbb', 'ccc'],
+
+            {'length': 4, 'offset': 0},
+
+            ['aaa', 'b', 'bb', 'ccc'],
+    ),
+    (
+            ['aaa', 'bbb', 'ccc'],
+
+            {'length': 6, 'offset': 0},
+
+            ['aaa', 'bbb', 'ccc'],
+    ),
+    (
+            ['aaa', 'bbb', 'ccc'],
+
+            {'length': 9, 'offset': 0},
+
+            ['aaa', 'bbb', 'ccc'],
+    ),
+    (  # 5
+            ['aaa', 'bbb', 'ccc'],
+
+            {'length': 1, 'offset': 4},
+
+            ['aaa', 'b', 'b', 'b', 'ccc'],
+    ),
+    (  # 6
+            ['aaa', 'bbb', 'ccc'],
+
+            {'length': 4, 'offset': 4},
+
+            ['aaa', 'b', 'bb', 'cc', 'c'],
+    ),
+    (  # 7
+            ['aaa', 'bbb', 'ccc'],
+
+            {'length': 2, 'offset': 6},
+
+            ['aaa', 'bbb', 'cc', 'c'],
+    ),
+    (
+            ['aaa', 'bbb', 'ccc'],
+
+            {'length': 3, 'offset': 6},
+
+            ['aaa', 'bbb', 'ccc'],
+    ),
+    (
+            ['aaa', 'bbb', 'ccc'],
+
+            {'length': 2, 'offset': 7},
+
+            ['aaa', 'bbb', 'c', 'cc'],
+    ),
     (
             ['so', 'me ', 'three ', 'pieces', ' of text', '..', '.'],
 
