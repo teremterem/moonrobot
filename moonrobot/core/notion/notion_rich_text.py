@@ -38,6 +38,35 @@ def collect_html_text(rich_text_list: Collection[JSONDict]) -> str:
     return text
 
 
+def _inject_entity(text_pieces: Collection[str], entity: JSONDict):
+    entity_start = int(entity['offset'])
+    entity_length = int(entity['length'])
+    entity_end = entity_start + entity_length
+
+    piece_start = 0
+    new_text_pieces = []
+    for piece_num, text_piece in enumerate(text_pieces):
+        piece_end = piece_start + len(text_piece)
+
+        if piece_start < entity_end and piece_end > entity_start:
+            # the entity overlaps with the piece one way or another
+            if piece_start == entity_start and piece_end == entity_end:
+                # the entity completely coincides with the piece
+                # TODO mark the piece
+                new_text_pieces.append(text_piece)
+
+            else:
+                pass
+
+        else:
+            # the entity does not overlap with the piece (it's either completely before or completely after the piece)
+            new_text_pieces.append(text_piece)
+
+        piece_start += piece_end  # next piece start
+
+    return new_text_pieces
+
+
 def rich_text_from_telegram_annotations(text: str, entities: Collection[MessageEntity]) -> List[JSONDict]:
     return [
         {

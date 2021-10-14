@@ -6,7 +6,26 @@ from telegram import MessageEntity, Bot
 # noinspection PyPackageRequirements
 from telegram.utils.types import JSONDict
 
-from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annotations
+# noinspection PyProtectedMember
+from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annotations, _inject_entity
+
+
+@pytest.mark.parametrize('text_pieces, entity, expected', [
+    (
+            ['so', 'me ', 'three ', 'pieces', ' of text', '..', '.'],
+
+            {'length': 11, 'offset': 8},
+
+            ['so', 'me ', 'thr', 'ee ', 'pieces', ' o', 'f text', '..', '.'],
+    ),
+])
+def test_inject_entity(
+        text_pieces: Collection[str],
+        entity: JSONDict,
+        expected: Collection[str],
+) -> None:
+    actual = _inject_entity(text_pieces, entity)
+    assert expected == actual
 
 
 # noinspection DuplicatedCode
