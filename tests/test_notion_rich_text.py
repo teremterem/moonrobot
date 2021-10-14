@@ -1,4 +1,4 @@
-from typing import Collection, List
+from typing import Collection, List, Any
 
 import pytest
 # noinspection PyPackageRequirements
@@ -7,7 +7,13 @@ from telegram import MessageEntity, Bot
 from telegram.utils.types import JSONDict
 
 # noinspection PyProtectedMember
-from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annotations, _inject_entity
+from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annotations, _inject_entity, \
+    _create_rich_text_entry
+
+
+class Marked:
+    def __init__(self, text: str) -> None:
+        self.text = text
 
 
 @pytest.mark.parametrize('text_pieces, entity, expected', [
@@ -16,86 +22,110 @@ from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_annot
 
             {'length': 2, 'offset': 0},
 
-            ['aa', 'a', 'bbb', 'ccc'],
+            [Marked('aa'), 'a', 'bbb', 'ccc'],
     ),
     (  # 1
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 3, 'offset': 0},
 
-            ['aaa', 'bbb', 'ccc'],
+            [Marked('aaa'), 'bbb', 'ccc'],
     ),
     (  # 2
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 4, 'offset': 0},
 
-            ['aaa', 'b', 'bb', 'ccc'],
+            [Marked('aaa'), Marked('b'), 'bb', 'ccc'],
     ),
     (  # 3
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 6, 'offset': 0},
 
-            ['aaa', 'bbb', 'ccc'],
+            [Marked('aaa'), Marked('bbb'), 'ccc'],
     ),
     (  # 4
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 9, 'offset': 0},
 
-            ['aaa', 'bbb', 'ccc'],
+            [Marked('aaa'), Marked('bbb'), Marked('ccc')],
     ),
     (  # 5
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 1, 'offset': 4},
 
-            ['aaa', 'b', 'b', 'b', 'ccc'],
+            ['aaa', 'b', Marked('b'), 'b', 'ccc'],
     ),
     (  # 6
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 4, 'offset': 4},
 
-            ['aaa', 'b', 'bb', 'cc', 'c'],
+            ['aaa', 'b', Marked('bb'), Marked('cc'), 'c'],
     ),
     (  # 7
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 2, 'offset': 6},
 
-            ['aaa', 'bbb', 'cc', 'c'],
+            ['aaa', 'bbb', Marked('cc'), 'c'],
     ),
     (  # 8
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 3, 'offset': 6},
 
-            ['aaa', 'bbb', 'ccc'],
+            ['aaa', 'bbb', Marked('ccc')],
     ),
     (  # 9
             ['aaa', 'bbb', 'ccc'],
 
             {'length': 2, 'offset': 7},
 
-            ['aaa', 'bbb', 'c', 'cc'],
+            ['aaa', 'bbb', 'c', Marked('cc')],
     ),
     (  # 10
             ['so', 'me ', 'three ', 'pieces', ' of text', '..', '.'],
 
             {'length': 11, 'offset': 8},
 
-            ['so', 'me ', 'thr', 'ee ', 'pieces', ' o', 'f text', '..', '.'],
+            ['so', 'me ', 'thr', Marked('ee '), Marked('pieces'), Marked(' o'), 'f text', '..', '.'],
     ),
 ])
 def test_inject_entity(
         text_pieces: Collection[str],
         entity: JSONDict,
-        expected: Collection[str],
+        expected: Collection[Any],
 ) -> None:
-    actual = _inject_entity(text_pieces, entity)
-    assert expected == actual
+    rich_text_entries = [_create_rich_text_entry(t) for t in text_pieces]
+    expected_entries = []
+
+    at_least_one_marked = False
+    at_least_one_not_marked = False
+    for e in expected:
+        is_marked = isinstance(e, Marked)
+        if is_marked:
+            at_least_one_marked = True
+            expected_entry = _create_rich_text_entry(e.text)
+        else:
+            at_least_one_not_marked = True
+            expected_entry = _create_rich_text_entry(e)
+
+        expected_entry['annotations']['bold'] = is_marked
+        expected_entries.append(expected_entry)
+
+    # test the test
+    assert at_least_one_marked
+    assert at_least_one_not_marked
+
+    def _make_bold(entry: JSONDict) -> None:
+        entry['annotations']['bold'] = True
+
+    actual_entries = _inject_entity(rich_text_entries, entity['offset'], entity['length'], _make_bold)
+    assert expected_entries == actual_entries
 
 
 # noinspection DuplicatedCode

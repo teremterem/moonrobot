@@ -126,7 +126,7 @@ def _inject_entity(
 
         else:
             # the entity does not overlap with the piece (it's either completely before or completely after the piece)
-            new_text_pieces.append(text_piece)
+            new_text_pieces.append(rich_text_entry)
 
         piece_start = piece_end  # next piece start
 
@@ -135,21 +135,5 @@ def _inject_entity(
 
 def rich_text_from_telegram_annotations(text: str, entities: Collection[MessageEntity]) -> List[JSONDict]:
     return [
-        {
-            'annotations': {
-                'bold': False,
-                'code': False,
-                'color': 'default',
-                'italic': False,
-                'strikethrough': False,
-                'underline': False,
-            },
-            'href': None,
-            'plain_text': text,
-            'text': {
-                'content': text,
-                'link': None,
-            },
-            'type': 'text',
-        },
+        _create_rich_text_entry(text),
     ]
