@@ -135,49 +135,60 @@ def _inject_entity_with_injecter(
 def _inject_entity(
         rich_text_entries: Collection[JSONDict],
         entity: JSONDict,
+        original_text: str,
 ):
     # TODO oleksandr: support all the entity types there are at the intersection of Notion and Telegram
     entity_type = entity['type']
+    entity_offset = entity['offset']
+    entity_length = entity['length']
 
     def _simple_injector(entry: JSONDict) -> None:
         entry['annotations'][inj_key] = inj_value
 
+    def _link_injector(entry: JSONDict) -> None:
+        entry['href'] = inj_url
+        entry['text']['link'] = {'url': inj_url}
+
     if entity_type == 'bold':
         inj_key = 'bold'
         inj_value = True
-        _injector = _simple_injector
+        injector = _simple_injector
 
     elif entity_type == 'italic':
         inj_key = 'italic'
         inj_value = True
-        _injector = _simple_injector
+        injector = _simple_injector
 
     elif entity_type == 'strikethrough':
         inj_key = 'strikethrough'
         inj_value = True
-        _injector = _simple_injector
+        injector = _simple_injector
 
     elif entity_type == 'underline':
         inj_key = 'underline'
         inj_value = True
-        _injector = _simple_injector
+        injector = _simple_injector
 
     elif entity_type == 'code':
         inj_key = 'code'
         inj_value = True
-        _injector = _simple_injector
+        injector = _simple_injector
+
+    elif entity_type == 'url':
+        inj_url = original_text[entity_offset:entity_offset + entity_length]
+        injector = _link_injector
 
     else:
         # unknown entity type => highlight with red background
         inj_key = 'color'
         inj_value = 'red_background'
-        _injector = _simple_injector
+        injector = _simple_injector
 
     new_entries = _inject_entity_with_injecter(
         rich_text_entries,
-        int(entity['offset']),
-        int(entity['length']),
-        _simple_injector,
+        int(entity_offset),
+        int(entity_length),
+        injector,
     )
     return new_entries
 
@@ -185,5 +196,5 @@ def _inject_entity(
 def rich_text_from_telegram_entities(text: str, entities: Collection[JSONDict]) -> List[JSONDict]:
     rich_text_entries = [_create_rich_text_entry(text)]
     for entity in entities:
-        rich_text_entries = _inject_entity(rich_text_entries, entity)
+        rich_text_entries = _inject_entity(rich_text_entries, entity, text)
     return rich_text_entries
