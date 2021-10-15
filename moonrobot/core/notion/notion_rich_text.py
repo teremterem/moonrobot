@@ -183,6 +183,14 @@ def _inject_entity(
         inj_url = _extract_entity_text()
         injector = _link_injector
 
+    elif entity_type == 'text_link':
+        inj_url = entity['url']
+        injector = _link_injector
+
+    elif entity_type == 'email':
+        inj_url = f"mailto:{_extract_entity_text()}"
+        injector = _link_injector
+
     elif entity_type == 'mention':
         mention = _extract_entity_text()
 
@@ -190,9 +198,12 @@ def _inject_entity(
             inj_url = f"https://t.me/{mention[1:]}"
             injector = _link_injector
 
-    elif entity_type == 'email':
-        inj_url = f"mailto:{_extract_entity_text()}"
-        injector = _link_injector
+    elif entity_type == 'text_mention':
+        username = entity.get('username')
+
+        if username:
+            inj_url = f"https://t.me/{username}"
+            injector = _link_injector
 
     if not injector:
         # unknown entity type => highlight with red background

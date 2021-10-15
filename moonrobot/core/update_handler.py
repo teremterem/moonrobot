@@ -64,7 +64,9 @@ def handle_telegram_update(update: Update, bot: Bot) -> None:
 
 “code” (<code>monowidth string</code>)
 
-“pre” (<pre>monowidth block</pre>) ?????
+“pre” (<pre>
+monowidth block
+</pre>) ?????
 
 “text_link” (<a href="https://www.google.com/">for clickable text URLs</a>)
 
