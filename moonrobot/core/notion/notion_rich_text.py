@@ -142,12 +142,17 @@ def _inject_entity(
     entity_offset = entity['offset']
     entity_length = entity['length']
 
+    def _extract_entity_text():
+        return original_text[entity_offset:entity_offset + entity_length]
+
     def _simple_injector(entry: JSONDict) -> None:
         entry['annotations'][inj_key] = inj_value
 
     def _link_injector(entry: JSONDict) -> None:
         entry['href'] = inj_url
         entry['text']['link'] = {'url': inj_url}
+
+    injector = None
 
     if entity_type == 'bold':
         inj_key = 'bold'
@@ -175,10 +180,21 @@ def _inject_entity(
         injector = _simple_injector
 
     elif entity_type == 'url':
-        inj_url = original_text[entity_offset:entity_offset + entity_length]
+        inj_url = _extract_entity_text()
         injector = _link_injector
 
-    else:
+    elif entity_type == 'mention':
+        mention = _extract_entity_text()
+
+        if mention.startswith('@'):
+            inj_url = f"https://t.me/{mention[1:]}"
+            injector = _link_injector
+
+    elif entity_type == 'email':
+        inj_url = f"mailto:{_extract_entity_text()}"
+        injector = _link_injector
+
+    if not injector:
         # unknown entity type => highlight with red background
         inj_key = 'color'
         inj_value = 'red_background'
