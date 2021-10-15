@@ -25,7 +25,7 @@ def handle_telegram_update(update: Update, bot: Bot) -> None:
             bot.send_message(
                 chat_id=update.effective_chat.id,
                 parse_mode=ParseMode.HTML,
-                text='thanks',
+                # text='thanks',
                 #                 text="""
                 # <b>bold</b>, <strong>bold</strong>
                 # <i>italic</i>, <em>italic</em>
@@ -39,4 +39,35 @@ def handle_telegram_update(update: Update, bot: Bot) -> None:
                 # <pre><code class="language-python">pre-formatted fixed-width code block written in the Python programming language
                 # </code></pre>
                 #                 """,
+                text="""
+“mention” (@username)
+
+“hashtag” (#hashtag)
+
+“cashtag” ($USD)
+
+“bot_command” (/start@jobs_bot)
+
+“url” (https://telegram.org)
+
+“email” (do-not-reply@telegram.org)
+
+“phone_number” (+1-212-555-0123)
+
+“bold” (<b>bold text</b>)
+
+“italic” (<i>italic text</i>)
+
+“underline” (<u>underlined text</u>) ???
+
+“strikethrough” (<s>strikethrough text</s>) ???
+
+“code” (<code>monowidth string</code>)
+
+“pre” (<pre>monowidth block</pre>) ?????
+
+“text_link” (<a href="https://www.google.com/">for clickable text URLs</a>)
+
+“text_mention” (<a href="tg://user?id=210723289">for users without usernames</a>) ???
+                """
             )
