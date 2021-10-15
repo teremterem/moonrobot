@@ -137,7 +137,6 @@ def _inject_entity(
         entity: JSONDict,
         original_text: str,
 ):
-    # TODO oleksandr: support all the entity types there are at the intersection of Notion and Telegram
     entity_type = entity['type']
     entity_offset = entity['offset']
     entity_length = entity['length']
@@ -184,8 +183,10 @@ def _inject_entity(
         injector = _link_injector
 
     elif entity_type == 'text_link':
-        inj_url = entity['url']
-        injector = _link_injector
+        inj_url = entity.get('url')
+
+        if inj_url:
+            injector = _link_injector
 
     elif entity_type == 'email':
         inj_url = f"mailto:{_extract_entity_text()}"
@@ -199,7 +200,7 @@ def _inject_entity(
             injector = _link_injector
 
     elif entity_type == 'text_mention':
-        username = entity.get('username')
+        username = (entity.get('user') or {}).get('username')
 
         if username:
             inj_url = f"https://t.me/{username}"
