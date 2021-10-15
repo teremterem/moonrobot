@@ -139,17 +139,46 @@ def _inject_entity(
     # TODO oleksandr: support all the entity types there are at the intersection of Notion and Telegram
     entity_type = entity['type']
 
+    def _simple_injector(entry: JSONDict) -> None:
+        entry['annotations'][inj_key] = inj_value
+
     if entity_type == 'bold':
         inj_key = 'bold'
+        inj_value = True
+        _injector = _simple_injector
+
     elif entity_type == 'italic':
         inj_key = 'italic'
+        inj_value = True
+        _injector = _simple_injector
+
+    elif entity_type == 'strikethrough':
+        inj_key = 'strikethrough'
+        inj_value = True
+        _injector = _simple_injector
+
+    elif entity_type == 'underline':
+        inj_key = 'underline'
+        inj_value = True
+        _injector = _simple_injector
+
+    elif entity_type == 'code':
+        inj_key = 'code'
+        inj_value = True
+        _injector = _simple_injector
+
     else:
-        return rich_text_entries  # unknown entity type => skipping injection
+        # unknown entity type => highlight with red background
+        inj_key = 'color'
+        inj_value = 'red_background'
+        _injector = _simple_injector
 
-    def _inject(entry: JSONDict) -> None:
-        entry['annotations'][inj_key] = True
-
-    new_entries = _inject_entity_with_injecter(rich_text_entries, int(entity['offset']), int(entity['length']), _inject)
+    new_entries = _inject_entity_with_injecter(
+        rich_text_entries,
+        int(entity['offset']),
+        int(entity['length']),
+        _simple_injector,
+    )
     return new_entries
 
 
