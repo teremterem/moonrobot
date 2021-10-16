@@ -47,6 +47,6 @@ def fetch_entrypoint_dict() -> JSONDict:
         value = collect_html_text(res['properties']['Message']['rich_text'])
         entrypoints_dict[key] = value
 
-    if logger.isEnabledFor(logging.DEBUG):
-        logger.debug('\nENTRY POINTS:\n\n%s\n', pformat(entrypoints_dict))
+    # if logger.isEnabledFor(logging.DEBUG):
+    #     logger.debug('\nENTRY POINTS:\n\n%s\n', pformat(entrypoints_dict))
     return entrypoints_dict
