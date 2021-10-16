@@ -35,7 +35,7 @@ class MrbMessage(NotionSyncable):
         if len(norm_text) > preview_limit:
             norm_text = norm_text[:preview_limit - 3] + '...'
 
-        result = f"#{self.id} - {'USER' if self.from_user else 'BOT'}: {norm_text}"
+        result = f"[{'USER' if self.from_user else 'BOT'} #{self.id}]: {norm_text}"
         return result
 
 
