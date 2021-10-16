@@ -46,9 +46,9 @@ def _sync_db_to_notion():
                     },
                 ],
                 'Message': rich_text_from_telegram_entities(message.plain_text or '', message.text_entities or []),
-                'Timestamp': {
-                    'number': message.sent_timestamp,
-                },
+                # 'Timestamp': {
+                #     'number': message.sent_timestamp,
+                # },
             },
         })
 

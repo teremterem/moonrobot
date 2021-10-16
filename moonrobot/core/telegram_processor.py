@@ -106,6 +106,10 @@ def handle_telegram_update_json(update_json: JSONDict) -> None:
             plain_text=update.effective_message.text,
             text_entities=[e.to_dict() for e in update.effective_message.entities],
             from_user=True,
+
+            # TODO oleksandr: fetch from the original dict instead ?
+            sent_timestamp=update.effective_message.to_dict()['date'],
+
             update_payload=update_json,
         )
         mrb_user_message.save()
