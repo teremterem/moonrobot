@@ -68,8 +68,12 @@ class MoonRobotRequest(Request):
             resp_msg = Message.de_json(resp_json, get_bot())
             mrb_bot_message = MrbBotMessage(
                 plain_text=resp_msg.text,
+
+                # TODO oleksandr: fetch from the original dict instead ?
                 text_entities=[e.to_dict() for e in resp_msg.entities],
+
                 from_user=False,
+                sent_timestamp=resp_msg.to_dict()['date'],  # TODO oleksandr: fetch from the original dict instead ?
                 url_suffix=url_suffix,
                 request_payload=data,
                 response_payload=resp_json,
