@@ -28,6 +28,16 @@ class MrbMessage(NotionSyncable):
     from_user = models.BooleanField()
     sent_timestamp = models.BigIntegerField()
 
+    def __str__(self):
+        norm_text = ' '.join((self.plain_text or '').split())
+
+        preview_limit = 200
+        if len(norm_text) > preview_limit:
+            norm_text = norm_text[:preview_limit - 3] + '...'
+
+        result = f"#{self.id} - {'USER' if self.from_user else 'BOT'}: {norm_text}"
+        return result
+
 
 class MrbUserMessage(MrbMessage):
     update_payload = models.JSONField(blank=True, null=True)
