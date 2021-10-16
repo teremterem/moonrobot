@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class MoonRobotRequest(Request):
     def __init__(self, bot: Optional[Bot] = None, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.bot = bot
+        self.bot = bot  # TODO oleksandr: PTB deprecated doing this - how to refactor ?
 
     def post(self, url: str, data: JSONDict, timeout: float = None) -> Union[JSONDict, bool]:
         url_suffix = url.split(settings.MRB_TELEGRAM_TOKEN)[-1]
