@@ -3,7 +3,6 @@ import html
 from typing import Collection, List, Optional, Callable
 
 # noinspection PyPackageRequirements
-# noinspection PyPackageRequirements
 from telegram.utils.types import JSONDict
 
 

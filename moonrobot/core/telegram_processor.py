@@ -1,4 +1,5 @@
 import logging
+import os
 from pprint import pformat
 from queue import Queue
 from threading import Thread
@@ -19,6 +20,9 @@ from moonrobot.core.update_handler import handle_telegram_update
 from moonrobot.models import MrbBotMessage, MrbUserMessage
 
 logger = logging.getLogger(__name__)
+
+HARDCODED_USER_ID = int(os.getenv('HARDCODED_USER_ID') or '0')  # for quick experimentation
+HARDCODED_CHAT_ID = HARDCODED_USER_ID  # for quick experimentation
 
 update_queue = Queue()
 

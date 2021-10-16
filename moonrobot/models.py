@@ -9,6 +9,10 @@ class NotionSyncable(models.Model):
     notion_id = models.TextField(blank=True, null=True)
 
 
+class MrbBot(NotionSyncable):
+    pass
+
+
 class MrbUser(NotionSyncable):
     pass
 
