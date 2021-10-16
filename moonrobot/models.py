@@ -31,7 +31,7 @@ class MrbMessage(NotionSyncable):
     def __str__(self):
         norm_text = ' '.join((self.plain_text or '').split())
 
-        preview_limit = 200
+        preview_limit = 100
         if len(norm_text) > preview_limit:
             norm_text = norm_text[:preview_limit - 3] + '...'
 
