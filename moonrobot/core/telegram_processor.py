@@ -3,7 +3,7 @@ import os
 from pprint import pformat
 from queue import Queue
 from threading import Thread
-from typing import Union
+from typing import Union, Optional
 
 from django.conf import settings
 # noinspection PyPackageRequirements
@@ -30,7 +30,7 @@ update_queue = Queue()
 def _handle_everything() -> None:
     while True:
         update_json = update_queue.get()
-        handle_telegram_update_json(update_json)
+        handle_telegram_update_json(update_json, get_bot())
 
 
 _telegram_handler_thread = Thread(
@@ -46,16 +46,23 @@ def get_bot() -> Bot:  # TODO oleksandr: is it thread safe ?
     global _bot
 
     if not _bot:
+        mrb_request = MoonRobotRequest()
         _bot = Bot(
             settings.MRB_TELEGRAM_TOKEN,
-            request=MoonRobotRequest(),
+            request=mrb_request,
         )
+        mrb_request.bot = _bot
+
         _bot.set_webhook(settings.MRB_TELEGRAM_WEBHOOK)
 
     return _bot
 
 
 class MoonRobotRequest(Request):
+    def __init__(self, bot: Optional[Bot] = None, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.bot = bot
+
     def post(self, url: str, data: JSONDict, timeout: float = None) -> Union[JSONDict, bool]:
         url_suffix = url.split(settings.MRB_TELEGRAM_TOKEN)[-1]
 
@@ -65,7 +72,7 @@ class MoonRobotRequest(Request):
         resp_json = super().post(url, data, timeout=timeout)
 
         if url_suffix != '/setWebhook':
-            resp_msg = Message.de_json(resp_json, get_bot())
+            resp_msg = Message.de_json(resp_json, self.bot)
             mrb_bot_message = MrbBotMessage(
                 plain_text=resp_msg.text,
 
@@ -92,7 +99,7 @@ class MoonRobotRequest(Request):
 get_bot()
 
 
-def handle_telegram_update_json(update_json: JSONDict) -> None:
+def handle_telegram_update_json(update_json: JSONDict, bot: Bot) -> None:
     update = None
 
     # noinspection PyBroadException
@@ -100,7 +107,7 @@ def handle_telegram_update_json(update_json: JSONDict) -> None:
         if logger.isEnabledFor(logging.INFO):
             logger.info('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))
 
-        update = Update.de_json(update_json, get_bot())
+        update = Update.de_json(update_json, bot)
 
         mrb_user_message = MrbUserMessage(
             plain_text=update.effective_message.text,
@@ -116,7 +123,7 @@ def handle_telegram_update_json(update_json: JSONDict) -> None:
 
         notion_db_sync_event.set()  # TODO oleksandr: use some sort of a lock to do this ?
 
-        handle_telegram_update(update, get_bot())
+        handle_telegram_update(update, bot)
     except Exception:
         logger.exception('EXCEPTION WHILE PROCESSING A TELEGRAM UPDATE')
 
