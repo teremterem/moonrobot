@@ -1,4 +1,5 @@
 import logging
+import os
 
 # noinspection PyPackageRequirements
 from telegram import Bot
@@ -8,6 +9,9 @@ from telegram import Update, ParseMode
 from moonrobot.core.notion.notion_client import fetch_entrypoint_dict
 
 logger = logging.getLogger(__name__)
+
+HARDCODED_USER_ID = int(os.getenv('HARDCODED_USER_ID') or '0')  # for quick experimentation
+HARDCODED_CHAT_ID = HARDCODED_USER_ID  # for quick experimentation
 
 
 def handle_telegram_update(update: Update, bot: Bot) -> None:
@@ -36,7 +40,8 @@ def handle_telegram_update(update: Update, bot: Bot) -> None:
                 # <a href="tg://user?id=210723289">inline mention of a user</a>
                 # <code>inline fixed-width code</code>
                 # <pre>pre-formatted fixed-width code block</pre>
-                # <pre><code class="language-python">pre-formatted fixed-width code block written in the Python programming language
+                # <pre><code class="language-python">pre-formatted fixed-width code block written in the Python
+                # programming language
                 # </code></pre>
                 #                 """,
                 text="""

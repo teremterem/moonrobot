@@ -3,7 +3,8 @@ from django.contrib.admin import ModelAdmin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
-from moonrobot.core.telegram_processor import get_bot, HARDCODED_CHAT_ID
+from moonrobot.core.telegram_bot import get_bot
+from moonrobot.core.update_handler import HARDCODED_CHAT_ID
 from moonrobot.models import MrbBot, MrbUser, MrbChat, MrbMessage, MrbUserMessage, MrbBotMessage
 
 
