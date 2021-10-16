@@ -8,4 +8,4 @@ pytest_plugins = [
 
 @pytest.fixture
 def fake_bot():
-    return Bot('1111111111:TESTESTESTESTESTESTESTESTESTESTEST')
+    return Bot('1111111111:TESTESTESTESTESTESTESTESTESTESTESTT')

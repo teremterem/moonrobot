@@ -43,6 +43,7 @@ def get_bot() -> Bot:  # TODO oleksandr: is it thread safe ?
         )
         mrb_request.bot = _bot
 
+        # TODO oleksandr: this fails unit tests - do something about it
         _bot.set_webhook(settings.MRB_TELEGRAM_WEBHOOK)
 
     return _bot
