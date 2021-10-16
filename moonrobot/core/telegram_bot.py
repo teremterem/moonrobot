@@ -1,5 +1,4 @@
 import logging
-import os
 from queue import Queue
 from threading import Thread
 
@@ -10,9 +9,6 @@ from telegram import Bot
 from moonrobot.core.telegram_processor import handle_telegram_update_json, MoonRobotRequest
 
 logger = logging.getLogger(__name__)
-
-HARDCODED_USER_ID = int(os.getenv('HARDCODED_USER_ID') or '0')  # for quick experimentation
-HARDCODED_CHAT_ID = HARDCODED_USER_ID  # for quick experimentation
 
 update_queue = Queue()
 
