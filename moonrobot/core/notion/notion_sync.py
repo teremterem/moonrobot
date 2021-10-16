@@ -31,7 +31,6 @@ _notion_sync_thread.start()  # TODO oleksandr: use a pool of workers ?
 # TODO oleksandr: think what kind of racing conditions are possible (decide on transaction isolation mechanism)
 # TODO oleksandr: use transaction.atomic ?
 def _sync_db_to_notion():
-    # noinspection PyUnresolvedReferences
     messages = MrbMessage.objects.filter(notion_synced=False)  # TODO oleksandr: order by message timestamp
     for message in messages:  # TODO oleksandr: get rid of this loop - only one item per second or so ! :(
         notion_page_resp = create_notion_page({
