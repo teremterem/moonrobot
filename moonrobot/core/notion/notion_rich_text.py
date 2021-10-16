@@ -65,23 +65,23 @@ def _create_rich_text_entry(text: str, href: Optional[str] = None) -> JSONDict:
 def _clone_rich_text_entry(
         original_entry: JSONDict,
         new_text: str,
-        injecter: Optional[Callable[[JSONDict], None]] = None,
+        injector: Optional[Callable[[JSONDict], None]] = None,
 ) -> JSONDict:
     new_entry = copy.deepcopy(original_entry)
     new_entry['plain_text'] = new_text
     new_entry['text']['content'] = new_text
 
-    if injecter:
-        injecter(new_entry)
+    if injector:
+        injector(new_entry)
 
     return new_entry
 
 
-def _inject_entity_with_injecter(
+def _inject_entity_with_injector(
         rich_text_entries: Collection[JSONDict],
         entity_start: int,
         entity_length: int,
-        injecter: Callable[[JSONDict], None],
+        injector: Callable[[JSONDict], None],
 ):
     entity_end = entity_start + entity_length
 
@@ -97,21 +97,21 @@ def _inject_entity_with_injecter(
         if entity_start <= piece_start and piece_end <= entity_end:
             # the entity fully encloses the piece
             new_entries.append(
-                _clone_rich_text_entry(entry, text_piece, injecter=injecter),
+                _clone_rich_text_entry(entry, text_piece, injector=injector),
             )
 
         elif piece_start < entity_start and entity_end < piece_end:
             # the entity sits inside the piece in such a way that it splits the piece in three
             new_entries.extend([
                 _clone_rich_text_entry(entry, text_piece[:entity_rel_start]),
-                _clone_rich_text_entry(entry, text_piece[entity_rel_start:entity_rel_end], injecter=injecter),
+                _clone_rich_text_entry(entry, text_piece[entity_rel_start:entity_rel_end], injector=injector),
                 _clone_rich_text_entry(entry, text_piece[entity_rel_end:]),
             ])
 
         elif entity_start <= piece_start < entity_end < piece_end:
             # the entity overlaps with the first half of the piece
             new_entries.extend([
-                _clone_rich_text_entry(entry, text_piece[:entity_rel_end], injecter=injecter),
+                _clone_rich_text_entry(entry, text_piece[:entity_rel_end], injector=injector),
                 _clone_rich_text_entry(entry, text_piece[entity_rel_end:]),
             ])
 
@@ -119,7 +119,7 @@ def _inject_entity_with_injecter(
             # the entity overlaps with the second half of the piece
             new_entries.extend([
                 _clone_rich_text_entry(entry, text_piece[:entity_rel_start]),
-                _clone_rich_text_entry(entry, text_piece[entity_rel_start:], injecter=injecter),
+                _clone_rich_text_entry(entry, text_piece[entity_rel_start:], injector=injector),
             ])
 
         else:
@@ -211,7 +211,7 @@ def _inject_entity(
         inj_value = 'red_background'
         injector = _simple_injector
 
-    new_entries = _inject_entity_with_injecter(
+    new_entries = _inject_entity_with_injector(
         rich_text_entries,
         int(entity_offset),
         int(entity_length),
