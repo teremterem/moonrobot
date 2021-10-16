@@ -75,13 +75,6 @@ class MoonRobotRequest(Request):
                 response_payload=resp_json,
             )
             mrb_bot_message.save()
-            # for ent in resp_msg.entities:
-            #     print(
-            #         str(ent.offset).rjust(10, ' '),
-            #         str(ent.offset + ent.length).rjust(10, ' '),
-            #         ent.type.rjust(30, ' '),
-            #     )
-            #     # pprint(ent.to_dict())
 
         if logger.isEnabledFor(logging.INFO):
             logger.info('\nSERVER RESPONSE:\n\n%s\n', pformat(resp_json))
