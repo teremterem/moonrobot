@@ -38,17 +38,24 @@ def _sync_db_to_notion():
                 'database_id': settings.MRB_NOTION_MESSAGES_DB_ID,
             },
             'properties': {
-                'Name': [
-                    {
-                        'text': {
-                            'content': 'USER' if message.from_user else 'BOT',
+                'Name': {
+                    'title': [
+                        {
+                            'text': {
+                                'content': 'USER' if message.from_user else 'BOT',
+                            },
                         },
-                    },
-                ],
-                'Message': rich_text_from_telegram_entities(message.plain_text or '', message.text_entities or []),
-                # 'Timestamp': {
-                #     'number': message.sent_timestamp,
-                # },
+                    ],
+                },
+                'Message': {
+                    'rich_text': rich_text_from_telegram_entities(
+                        message.plain_text or '',
+                        message.text_entities or [],
+                    ),
+                },
+                'Timestamp': {
+                    'number': message.sent_timestamp,
+                },
             },
         })
 
