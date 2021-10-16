@@ -26,6 +26,7 @@ class MrbMessage(NotionSyncable):
     plain_text = models.TextField(blank=True, null=True)
     text_entities = models.JSONField(blank=True, null=True)
     from_user = models.BooleanField()
+    sent_timestamp = models.BigIntegerField()
 
 
 class MrbUserMessage(MrbMessage):
