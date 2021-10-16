@@ -25,7 +25,7 @@ def reply(modeladmin: 'MrbUserMessageAdmin', request: HttpRequest, queryset: Que
     mrb_msg: MrbUserMessage
     for mrb_msg in queryset:
         message = extract_telegram_message(mrb_msg)
-        message.reply_text('hello taporld')
+        message.reply_text('hello taporld', reply_to_message_id=message.message_id)
 
 
 class MrbUserMessageAdmin(ModelAdmin):
