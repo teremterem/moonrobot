@@ -48,15 +48,19 @@ def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, query
     # TODO oleksandr: account for pagination
 
 
+class MrbBotAdmin(ModelAdmin):
+    actions = [process_outbox]
+
+
 class MrbUserMessageAdmin(ModelAdmin):
     actions = [reply]
 
 
 class MrbBotMessageAdmin(ModelAdmin):
-    actions = [process_outbox]
+    actions = [reply]
 
 
-admin.site.register(MrbBot)
+admin.site.register(MrbBot, MrbBotAdmin)
 admin.site.register(MrbUser)
 admin.site.register(MrbChat)
 admin.site.register(MrbMessage)
