@@ -8,6 +8,7 @@ from telegram import Update, Message
 
 from moonrobot.core.notion.notion_client import query_notion_db
 from moonrobot.core.telegram_bot import get_bot
+from moonrobot.core.utils import parse_unique_msg_id
 from moonrobot.models import MrbBot, MrbUser, MrbChat, MrbMessage, MrbUserMessage, MrbBotMessage
 
 
@@ -46,6 +47,12 @@ def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, query
     )
     # TODO oleksandr: store it in local DB
     # TODO oleksandr: account for pagination
+
+    for outbox_msg in messages_db_content['results']:
+        mrb_msg = MrbMessage.objects.filter(notion_id=outbox_msg['id']).first
+        if mrb_msg.unique_msg_id:
+            chat_id, msg_id = parse_unique_msg_id(mrb_msg.unique_msg_id)
+            get_bot().send_message(chat_id, 'hello wjörld', reply_to_message_id=msg_id)
 
 
 class MrbBotAdmin(ModelAdmin):

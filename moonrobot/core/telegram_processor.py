@@ -14,6 +14,7 @@ from telegram.utils.types import JSONDict
 
 from moonrobot.core.notion.notion_sync import notion_db_sync_event
 from moonrobot.core.update_handler import handle_telegram_update
+from moonrobot.core.utils import construct_unique_msg_id
 from moonrobot.models import MrbBotMessage, MrbUserMessage
 
 logger = logging.getLogger(__name__)
@@ -35,6 +36,7 @@ class MoonRobotRequest(Request):
         if url_suffix != '/setWebhook':
             resp_msg = Message.de_json(resp_json, self.bot)
             mrb_bot_message = MrbBotMessage(
+                unique_msg_id=construct_unique_msg_id(resp_msg),
                 plain_text=resp_msg.text,
 
                 # TODO oleksandr: fetch from the original dict instead ?
@@ -66,6 +68,7 @@ def handle_telegram_update_json(update_json: JSONDict, bot: Bot) -> None:
         update = Update.de_json(update_json, bot)
 
         mrb_user_message = MrbUserMessage(
+            unique_msg_id=construct_unique_msg_id(update.effective_message),
             plain_text=update.effective_message.text,
             text_entities=[e.to_dict() for e in update.effective_message.entities],
             from_user=True,
