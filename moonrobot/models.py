@@ -6,7 +6,7 @@ class NotionSyncable(models.Model):
         abstract = True
 
     notion_synced = models.BooleanField(db_index=True, default=False)
-    notion_id = models.TextField(blank=True, null=True)
+    notion_id = models.TextField(blank=True, null=True, db_index=True)  # TODO oleksandr: unique=True ?
 
 
 class MrbBot(NotionSyncable):

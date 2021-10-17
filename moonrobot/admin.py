@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.db.models import QuerySet
@@ -5,6 +6,7 @@ from django.http import HttpRequest
 # noinspection PyPackageRequirements
 from telegram import Update, Message
 
+from moonrobot.core.notion.notion_client import query_notion_db
 from moonrobot.core.telegram_bot import get_bot
 from moonrobot.models import MrbBot, MrbUser, MrbChat, MrbMessage, MrbUserMessage, MrbBotMessage
 
@@ -28,12 +30,30 @@ def reply(modeladmin: 'MrbUserMessageAdmin', request: HttpRequest, queryset: Que
         message.reply_text('hello taporld', reply_to_message_id=message.message_id)
 
 
+# noinspection PyUnusedLocal
+@admin.action(description='Process outbox')
+def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, queryset: QuerySet) -> None:
+    messages_db_content = query_notion_db(
+        settings.MRB_NOTION_MESSAGES_DB_ID,
+        body_json={
+            'filter': {
+                'property': 'Status',
+                'select': {
+                    'equals': 'Outbox',
+                },
+            },
+        },
+    )
+    # TODO oleksandr: store it in local DB
+    # TODO oleksandr: account for pagination
+
+
 class MrbUserMessageAdmin(ModelAdmin):
     actions = [reply]
 
 
 class MrbBotMessageAdmin(ModelAdmin):
-    actions = [reply]
+    actions = [process_outbox]
 
 
 admin.site.register(MrbBot)

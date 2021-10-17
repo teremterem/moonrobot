@@ -30,8 +30,8 @@ def request_notion(uri: str, body_json=None) -> JSONDict:
     return resp_json
 
 
-def query_notion_db(database_id: str) -> JSONDict:
-    return request_notion(f"databases/{database_id}/query")
+def query_notion_db(database_id: str, body_json=None) -> JSONDict:
+    return request_notion(f"databases/{database_id}/query", body_json=body_json)
 
 
 def create_notion_page(body: JSONDict) -> JSONDict:
@@ -40,6 +40,8 @@ def create_notion_page(body: JSONDict) -> JSONDict:
 
 def fetch_entrypoint_dict() -> JSONDict:
     entrypoints_db_content = query_notion_db(settings.MRB_NOTION_ENTRYPOINTS_DB_ID)
+    # TODO oleksandr: store it in local DB
+    # TODO oleksandr: account for pagination
 
     entrypoints_dict = {}
     for res in entrypoints_db_content['results']:
