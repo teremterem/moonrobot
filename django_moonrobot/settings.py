@@ -141,6 +141,6 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': os.getenv('MOONROBOT_LOG_LEVEL', 'INFO'),
+        'level': os.getenv('MRB_LOG_LEVEL', 'INFO'),
     },
 }

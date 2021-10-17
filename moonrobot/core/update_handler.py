@@ -10,6 +10,7 @@ from moonrobot.core.notion.notion_client import fetch_entrypoint_dict
 
 logger = logging.getLogger(__name__)
 
+# TODO oleksandr: get rid of these
 HARDCODED_USER_ID = int(os.getenv('HARDCODED_USER_ID') or '0')  # for quick experimentation
 HARDCODED_CHAT_ID = HARDCODED_USER_ID  # for quick experimentation
 
