@@ -4,9 +4,10 @@ from django.contrib.admin import ModelAdmin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 # noinspection PyPackageRequirements
-from telegram import Update, Message
+from telegram import Update, Message, ParseMode
 
 from moonrobot.core.notion.notion_client import query_notion_db, update_notion_page
+from moonrobot.core.notion.notion_rich_text import collect_html_text
 from moonrobot.core.telegram_bot import get_bot
 from moonrobot.core.utils import parse_unique_msg_id
 from moonrobot.models import MrbBot, MrbUser, MrbChat, MrbMessage, MrbUserMessage, MrbBotMessage
@@ -50,21 +51,34 @@ def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, query
 
     for outbox_msg in messages_db_content['results']:
         notion_page_id = outbox_msg['id']
+
+        # TODO oleksandr: is it cheating to use a rollup instead of the original relation ?
+        notion_answer_with_msgs = outbox_msg['properties']['Answer with msg']['rollup']['array']
+        answer_with_msgs = [collect_html_text(m['rich_text']) for m in notion_answer_with_msgs]
+
         mrb_msg = MrbMessage.objects.filter(notion_id=notion_page_id).first()
         if mrb_msg and mrb_msg.unique_msg_id:
             chat_id, msg_id = parse_unique_msg_id(mrb_msg.unique_msg_id)
-            get_bot().send_message(chat_id, 'hello wjörld', reply_to_message_id=msg_id)
 
-            # TODO oleksandr: schedule this as synchronization
-            update_notion_page(notion_page_id, {
-                'properties': {
-                    'Status': {
-                        'select': {
-                            'name': 'Answered',
+            for answer_with_msg in answer_with_msgs:
+                get_bot().send_message(
+                    chat_id,
+                    answer_with_msg,
+                    parse_mode=ParseMode.HTML,
+                    reply_to_message_id=msg_id,
+                )
+
+            if answer_with_msgs:
+                # TODO oleksandr: schedule this as synchronization
+                update_notion_page(notion_page_id, {
+                    'properties': {
+                        'Status': {
+                            'select': {
+                                'name': 'Answered',
+                            },
                         },
                     },
-                },
-            })
+                })
 
 
 class MrbBotAdmin(ModelAdmin):
