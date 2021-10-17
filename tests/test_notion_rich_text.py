@@ -6,7 +6,7 @@ import pytest
 from telegram.utils.types import JSONDict
 
 # noinspection PyProtectedMember
-from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_entities, _inject_entity_with_injecter, \
+from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_entities, _inject_entity_with_injector, \
     _create_rich_text_entry
 
 
@@ -72,7 +72,7 @@ class Marked:
             ['so', 'me ', 'thr', Marked('ee '), Marked('pieces'), Marked(' o'), 'f text', '..', '.'],
     ),
 ])
-def test_inject_entity_with_injecter(
+def test_inject_entity_with_injector(
         text_pieces: Collection[str],
         entity: JSONDict,
         expected: Collection[Any],
@@ -90,7 +90,7 @@ def test_inject_entity_with_injecter(
     def _make_bold(entry: JSONDict) -> None:
         entry['annotations']['bold'] = True
 
-    actual_entries = _inject_entity_with_injecter(rich_text_entries, entity['offset'], entity['length'], _make_bold)
+    actual_entries = _inject_entity_with_injector(rich_text_entries, entity['offset'], entity['length'], _make_bold)
     assert expected_entries == actual_entries
 
 
