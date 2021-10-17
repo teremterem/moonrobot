@@ -6,7 +6,7 @@ from django.http import HttpRequest
 # noinspection PyPackageRequirements
 from telegram import Update, Message
 
-from moonrobot.core.notion.notion_client import query_notion_db
+from moonrobot.core.notion.notion_client import query_notion_db, update_notion_page
 from moonrobot.core.telegram_bot import get_bot
 from moonrobot.core.utils import parse_unique_msg_id
 from moonrobot.models import MrbBot, MrbUser, MrbChat, MrbMessage, MrbUserMessage, MrbBotMessage
@@ -34,9 +34,11 @@ def reply(modeladmin: 'MrbUserMessageAdmin', request: HttpRequest, queryset: Que
 # noinspection PyUnusedLocal
 @admin.action(description='Process outbox')
 def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, queryset: QuerySet) -> None:
+    # TODO oleksandr: store it in local DB
+    # TODO oleksandr: account for pagination
     messages_db_content = query_notion_db(
         settings.MRB_NOTION_MESSAGES_DB_ID,
-        body_json={
+        body={
             'filter': {
                 'property': 'Status',
                 'select': {
@@ -45,14 +47,24 @@ def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, query
             },
         },
     )
-    # TODO oleksandr: store it in local DB
-    # TODO oleksandr: account for pagination
 
     for outbox_msg in messages_db_content['results']:
-        mrb_msg = MrbMessage.objects.filter(notion_id=outbox_msg['id']).first()
+        notion_page_id = outbox_msg['id']
+        mrb_msg = MrbMessage.objects.filter(notion_id=notion_page_id).first()
         if mrb_msg and mrb_msg.unique_msg_id:
             chat_id, msg_id = parse_unique_msg_id(mrb_msg.unique_msg_id)
             get_bot().send_message(chat_id, 'hello wjörld', reply_to_message_id=msg_id)
+
+            # TODO oleksandr: schedule this as synchronization
+            update_notion_page(notion_page_id, {
+                'properties': {
+                    'Status': {
+                        'select': {
+                            'name': 'Answered',
+                        },
+                    },
+                },
+            })
 
 
 class MrbBotAdmin(ModelAdmin):

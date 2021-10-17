@@ -11,16 +11,17 @@ from moonrobot.core.notion.notion_rich_text import collect_plain_text, collect_h
 logger = logging.getLogger(__name__)
 
 
-def request_notion(uri: str, body_json=None) -> JSONDict:
+def request_notion(uri: str, method: str = 'post', body=None) -> JSONDict:
     url = f"https://api.notion.com/v1/{uri}"
 
-    with requests.post(
+    with requests.request(
+            method,
             url,
             headers={
                 'Authorization': f"Bearer {settings.MRB_NOTION_TOKEN}",
                 'Notion-Version': '2021-08-16',
             },
-            json=body_json or {},
+            json=body or {},
     ) as resp:
         resp_json = resp.json()
 
@@ -30,19 +31,23 @@ def request_notion(uri: str, body_json=None) -> JSONDict:
     return resp_json
 
 
-def query_notion_db(database_id: str, body_json=None) -> JSONDict:
-    return request_notion(f"databases/{database_id}/query", body_json=body_json)
+def query_notion_db(database_id: str, body=None) -> JSONDict:
+    return request_notion(f"databases/{database_id}/query", body=body)
 
 
 def create_notion_page(body: JSONDict) -> JSONDict:
-    return request_notion('pages', body_json=body)
+    return request_notion('pages', body=body)
+
+
+def update_notion_page(page_id: str, body: JSONDict) -> JSONDict:
+    return request_notion(f"pages/{page_id}", method='patch', body=body)
 
 
 def fetch_entrypoint_dict() -> JSONDict:
+    # TODO oleksandr: account for pagination; schedule as synchronization
     entrypoints_db_content = query_notion_db(settings.MRB_NOTION_ENTRYPOINTS_DB_ID)
-    # TODO oleksandr: store it in local DB
-    # TODO oleksandr: account for pagination
 
+    # TODO oleksandr: store it in local DB
     entrypoints_dict = {}
     for res in entrypoints_db_content['results']:
         key = collect_plain_text(res['properties']['Name']['title'])
