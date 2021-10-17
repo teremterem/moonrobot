@@ -38,7 +38,7 @@ def _sync_db_to_notion():
                 'database_id': settings.MRB_NOTION_MESSAGES_DB_ID,
             },
             'properties': {
-                'Name': {
+                'From': {
                     'title': [
                         {
                             'text': {
