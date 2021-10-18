@@ -47,6 +47,9 @@ def _sync_db_to_notion():
                         },
                     ],
                 },
+                'From user': {
+                    'checkbox': message.from_user,
+                },
                 'Message': {
                     'rich_text': rich_text_from_telegram_entities(
                         message.plain_text or '',
