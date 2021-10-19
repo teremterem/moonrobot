@@ -22,7 +22,7 @@ class MrbChat(NotionSyncable):
 
 
 class MrbMessage(NotionSyncable):
-    unique_msg_id = models.CharField(max_length=63, unique=True)
+    unique_msg_id = models.CharField(max_length=63, unique=True)  # TODO oleksandr: include bot_id
     plain_text = models.TextField(blank=True, null=True)
     text_entities = models.JSONField(blank=True, null=True)
     from_user = models.BooleanField()
