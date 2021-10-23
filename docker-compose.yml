@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    image: postgres:12.4
+    image: postgres:13.3
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
@@ -14,10 +14,8 @@ services:
     stdin_open: true  # docker run -i  # needed to enable debugging with pdb/ipdb
     tty: true  # docker run -t  # needed to enable debugging with pdb/ipdb
     command: pipenv run python manage.py runserver 0.0.0.0:8000
-    environment:
-      - DJANGO_URL_SHORTENER_PREFIX=http://localhost:8000/  # change to https://yourdomain.io/
-                                                            # (replace yourdomain.io with your domain name)
-      - IPDB_CONTEXT_SIZE=9  # number of lines of code for ipdb to show
+#    environment:
+#      - IPDB_CONTEXT_SIZE=9  # number of lines of code for ipdb to show
     volumes:
       - .:/code
     ports:

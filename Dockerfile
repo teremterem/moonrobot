@@ -1,4 +1,4 @@
-FROM python:3.8.5
+FROM python:3.8.12
 
 ENV PYTHONUNBUFFERED 1
 # https://stackoverflow.com/questions/59812009/what-is-the-use-of-pythonunbuffered-in-docker-file
@@ -7,10 +7,11 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir /code
 WORKDIR /code
 
+RUN pip install pipenv==2021.5.29
+
 COPY Pipfile /code/
 COPY Pipfile.lock /code/
 
-RUN pip install pipenv==2020.8.13
-RUN pipenv install --dev --deploy
+RUN pipenv install --deploy
 
 COPY . /code/
