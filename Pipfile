@@ -7,6 +7,7 @@ name = "pypi"
 python-telegram-bot-raw = "~=13.7"
 requests = "~=2.26"
 django = "~=3.2"
+psycopg2-binary = "*"
 
 [dev-packages]
 pytest = "~=6.2"
