@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+from distutils.util import strtobool
 from pathlib import Path
 
 MRB_TELEGRAM_TOKEN = os.environ['MRB_TELEGRAM_TOKEN']
@@ -32,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-rbjeml#e1e8ujpy8i2%*-mprrqb1q29=3rpt3t1&d)yxd&5-va'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = strtobool(os.environ.get('DEBUG') or 'no')
 
 ALLOWED_HOSTS = [MRB_WEBHOOK_HOST]
 if DEBUG:
