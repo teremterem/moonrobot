@@ -33,6 +33,12 @@ def reply(modeladmin: 'MrbUserMessageAdmin', request: HttpRequest, queryset: Que
 
 
 # noinspection PyUnusedLocal
+@admin.action(description='Set Telegram webhook')
+def set_telegram_webhook(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, queryset: QuerySet) -> None:
+    get_bot().set_webhook(settings.MRB_TELEGRAM_WEBHOOK)
+
+
+# noinspection PyUnusedLocal
 @admin.action(description='Process outbox')
 def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, queryset: QuerySet) -> None:
     # TODO oleksandr: store it in local DB
@@ -82,7 +88,7 @@ def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, query
 
 
 class MrbBotAdmin(ModelAdmin):
-    actions = [process_outbox]
+    actions = [process_outbox, set_telegram_webhook]
 
 
 class MrbUserMessageAdmin(ModelAdmin):
