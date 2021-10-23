@@ -1,6 +1,4 @@
 import logging
-import os
-from distutils.util import strtobool
 from queue import Queue
 from threading import Thread
 
@@ -11,8 +9,6 @@ from telegram import Bot
 from moonrobot.core.telegram_processor import handle_telegram_update_json, MoonRobotRequest
 
 logger = logging.getLogger(__name__)
-
-MRB_SET_TELEGRAM_WEBHOOK = strtobool(os.getenv('MRB_SET_TELEGRAM_WEBHOOK') or 'yes')
 
 update_queue = Queue()
 
@@ -32,7 +28,7 @@ _telegram_handler_thread.start()  # TODO oleksandr: use a pool of workers ?
 _bot = None
 
 
-def get_bot() -> Bot:  # TODO oleksandr: is it thread safe ?
+def get_bot() -> Bot:
     global _bot
 
     if not _bot:
@@ -43,12 +39,4 @@ def get_bot() -> Bot:  # TODO oleksandr: is it thread safe ?
         )
         mrb_request.bot = _bot
 
-        if MRB_SET_TELEGRAM_WEBHOOK:
-            _bot.set_webhook(settings.MRB_TELEGRAM_WEBHOOK)
-
     return _bot
-
-
-# TODO oleksandr: figure how to only load the bot when server is started and not during othe operations like
-#  `python manage.py makemigrations`
-get_bot()

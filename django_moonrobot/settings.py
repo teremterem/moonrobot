@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+from distutils.util import strtobool
 from pathlib import Path
 
 MRB_TELEGRAM_TOKEN = os.environ['MRB_TELEGRAM_TOKEN']
@@ -32,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-rbjeml#e1e8ujpy8i2%*-mprrqb1q29=3rpt3t1&d)yxd&5-va'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(strtobool(os.environ.get('DEBUG') or 'no'))
 
 ALLOWED_HOSTS = [MRB_WEBHOOK_HOST]
 if DEBUG:
@@ -87,7 +88,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    } if DEBUG else {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('MRB_DB_NAME', 'moonrobot'),
+        'USER': os.getenv('MRB_DB_USER', 'postgres'),
+        'PASSWORD': os.environ['MRB_DB_PASSWORD'],
+        'HOST': os.environ['MRB_DB_HOST'],
+        'PORT': int(os.getenv('MRB_DB_PORT', 5432)),
+    },
 }
 
 # Password validation
@@ -124,7 +132,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/static/' if DEBUG else os.environ['MRB_STATIC_URL']
+STATIC_ROOT = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
