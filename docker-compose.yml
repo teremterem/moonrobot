@@ -32,6 +32,7 @@ services:
       MRB_NOTION_TOKEN: "${MRB_NOTION_TOKEN}"
       MRB_NOTION_ENTRYPOINTS_DB_ID: "${MRB_NOTION_ENTRYPOINTS_DB_ID}"
       MRB_NOTION_MESSAGES_DB_ID: "${MRB_NOTION_MESSAGES_DB_ID}"
+      MRB_STATIC_URL: "${MRB_STATIC_URL}"
 #      IPDB_CONTEXT_SIZE: 9  # number of lines of code for ipdb to show
 #    volumes:  # TODO oleksandr: uncomment this ? (it will ignore .dockerignore if I do, though)
 #      - .:/code
