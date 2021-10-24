@@ -6,6 +6,16 @@ python manage.py runserver
 
 ## Docker Compose
 
+### Run in PROD
+
+```
+docker-compose -f docker-compose.yml build
+```
+```
+docker-compose -f docker-compose.yml up
+```
+Specifying `-f docker-compose.yml` explicitly ensures that `docker-compose.override.yml` will not be applied.
+
 ### Migrate DB
 
 ```
