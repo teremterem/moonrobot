@@ -46,6 +46,11 @@ def set_telegram_webhook(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest,
 # noinspection PyUnusedLocal
 @admin.action(description='Process outbox')
 def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, queryset: QuerySet) -> None:
+    first_bot = queryset[0]
+
+    first_bot.notion_synced = False
+    first_bot.save()
+
     # TODO oleksandr: store it in local DB
     # TODO oleksandr: account for pagination
     messages_db_content = query_notion_db(
@@ -100,6 +105,9 @@ def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, query
                     })
         except Exception:
             logger.exception('FAILED TO RESPOND TO A MESSAGE IN OUTBOX')
+
+    first_bot.notion_synced = True
+    first_bot.save()
 
 
 class MrbBotAdmin(ModelAdmin):
