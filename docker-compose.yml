@@ -1,30 +1,16 @@
 version: '3.4'
 
 x-database-credentials: &database-credentials
-  MRB_DB_HOST: "${MRB_DB_HOST:-db}"
-  MRB_DB_PORT: "${MRB_DB_PORT:-5432}"
-
-  MRB_DB_NAME: "${MRB_DB_NAME:-moonrobot}"
-  POSTGRES_DB: "${MRB_DB_NAME:-moonrobot}"
-
-  MRB_DB_USER:   "${MRB_DB_USER:-postgres}"
-  POSTGRES_USER: "${MRB_DB_USER:-postgres}"
-
-  MRB_DB_PASSWORD:   "${MRB_DB_PASSWORD:-postgres}"
-  POSTGRES_PASSWORD: "${MRB_DB_PASSWORD:-postgres}"
+  POSTGRES_HOST: "${POSTGRES_HOST}"
+  POSTGRES_PORT: "${POSTGRES_PORT:-5432}"
+  POSTGRES_DB: "${POSTGRES_DB:-moonrobot}"
+  POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+  POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
 
 services:
-  db:
-    image: postgres:13.3
-    environment:
-      <<: *database-credentials
-    ports:
-      - "8432:5432"  # allows to use an external tool like DBeaver to connect to and inspect the database content
   web:
     build: .
-#    stdin_open: true  # docker run -i  # needed to enable debugging with pdb/ipdb
-#    tty: true  # docker run -t  # needed to enable debugging with pdb/ipdb
-    command: pipenv run python manage.py runserver 0.0.0.0:8000
+    command: pipenv run python manage.py runserver 0.0.0.0:8000  # TODO oleksandr: change to either gunicorn or uvicorn
     environment:
       <<: *database-credentials
       MRB_TELEGRAM_TOKEN: "${MRB_TELEGRAM_TOKEN}"
@@ -33,10 +19,5 @@ services:
       MRB_NOTION_ENTRYPOINTS_DB_ID: "${MRB_NOTION_ENTRYPOINTS_DB_ID}"
       MRB_NOTION_MESSAGES_DB_ID: "${MRB_NOTION_MESSAGES_DB_ID}"
       MRB_STATIC_URL: "${MRB_STATIC_URL}"
-#      IPDB_CONTEXT_SIZE: 9  # number of lines of code for ipdb to show
-#    volumes:  # TODO oleksandr: uncomment this ? (it will ignore .dockerignore if I do, though)
-#      - .:/code
     ports:
       - "8000:8000"  # setting "80:8000" instead will make the app accessible on port 80 of the host machine
-    depends_on:
-      - db

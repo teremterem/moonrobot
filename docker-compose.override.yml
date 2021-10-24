@@ -1,0 +1,27 @@
+version: '3.4'
+
+x-database-credentials: &database-credentials
+  POSTGRES_HOST: db
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: "${POSTGRES_DB:-moonrobot}"
+  POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+  POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-postgres}"
+
+services:
+  db:
+    image: postgres:13.3
+    environment:
+      <<: *database-credentials
+    ports:
+      - "8432:5432"  # allows to use an external tool like DBeaver to connect to and inspect the database content
+  web:
+#    stdin_open: true  # equivalent to `docker run -i`, needed to enable debugging with pdb/ipdb
+#    tty: true  # equivalent to `docker run -t`, needed to enable debugging with pdb/ipdb
+    environment:
+      <<: *database-credentials
+#      DEBUG: "yes"
+#      IPDB_CONTEXT_SIZE: 9  # number of lines of code for ipdb to show
+    volumes:
+      - .:/code
+    depends_on:
+      - db
