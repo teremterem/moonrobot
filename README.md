@@ -12,7 +12,7 @@ python manage.py runserver
 docker-compose -f docker-compose.yml build
 ```
 ```
-docker-compose -f docker-compose.yml up
+docker-compose -f docker-compose.yml -d up
 ```
 Specifying `-f docker-compose.yml` explicitly ensures that `docker-compose.override.yml` will not be applied.
 
