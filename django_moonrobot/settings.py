@@ -34,6 +34,7 @@ SECRET_KEY = 'django-insecure-rbjeml#e1e8ujpy8i2%*-mprrqb1q29=3rpt3t1&d)yxd&5-va
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(strtobool(os.environ.get('DEBUG') or 'no'))
+MRB_USE_SQLITE = bool(strtobool(os.environ.get('MRB_USE_SQLITE') or 'no'))
 
 ALLOWED_HOSTS = [MRB_WEBHOOK_HOST]
 if DEBUG:
@@ -88,7 +89,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    } if DEBUG else {
+    } if MRB_USE_SQLITE else {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('POSTGRES_DB', 'moonrobot'),
         'USER': os.getenv('POSTGRES_USER', 'postgres'),

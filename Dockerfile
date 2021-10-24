@@ -12,6 +12,6 @@ RUN pip install pipenv==2021.5.29
 COPY Pipfile /code/
 COPY Pipfile.lock /code/
 
-RUN pipenv sync --deploy
+RUN pipenv install --deploy
 
 COPY . /code/
