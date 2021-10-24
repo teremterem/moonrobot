@@ -22,7 +22,7 @@ services:
       <<: *database-credentials
       DEBUG: "yes"
 #      IPDB_CONTEXT_SIZE: 9  # number of lines of code for ipdb to show
-#    volumes:  # TODO oleksandr: uncomment this ? (it will ignore .dockerignore if I do, though)
-#      - .:/code
+    volumes:
+      - .:/code
     depends_on:
       - db
