@@ -21,9 +21,14 @@ import moonrobot.views
 
 urlpatterns = [
     path(
+        'health/',
+        moonrobot.views.health,
+        name='health',
+    ),
+    path(
         settings.MRB_TELEGRAM_TOKEN,
         moonrobot.views.telegram_webhook,
-        name="telegram_webhook",
+        name='telegram_webhook',
     ),
     path('admin/', admin.site.urls),
 ]
