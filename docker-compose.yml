@@ -9,6 +9,7 @@ x-database-credentials: &database-credentials
 
 services:
   web:
+    restart: always
     build: .
     command: pipenv run python manage.py runserver 0.0.0.0:8000  # TODO oleksandr: change to either gunicorn or uvicorn
     environment:

@@ -9,6 +9,7 @@ x-database-credentials: &database-credentials
 
 services:
   db:
+    restart: always
     image: postgres:13.3
     environment:
       <<: *database-credentials
