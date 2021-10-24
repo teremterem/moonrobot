@@ -1,17 +1,11 @@
 version: '3.4'
 
 x-database-credentials: &database-credentials
-  MRB_DB_HOST: "${MRB_DB_HOST:-db}"
-  MRB_DB_PORT: "${MRB_DB_PORT:-5432}"
-
-  MRB_DB_NAME: "${MRB_DB_NAME:-moonrobot}"
-  POSTGRES_DB: "${MRB_DB_NAME:-moonrobot}"
-
-  MRB_DB_USER:   "${MRB_DB_USER:-postgres}"
-  POSTGRES_USER: "${MRB_DB_USER:-postgres}"
-
-  MRB_DB_PASSWORD:   "${MRB_DB_PASSWORD:-postgres}"
-  POSTGRES_PASSWORD: "${MRB_DB_PASSWORD:-postgres}"
+  POSTGRES_HOST: "${POSTGRES_HOST:-db}"
+  POSTGRES_PORT: "${POSTGRES_PORT:-5432}"
+  POSTGRES_DB: "${POSTGRES_DB:-moonrobot}"
+  POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+  POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-postgres}"
 
 services:
   db:

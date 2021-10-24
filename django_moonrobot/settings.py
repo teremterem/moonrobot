@@ -90,11 +90,11 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     } if DEBUG else {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('MRB_DB_NAME', 'moonrobot'),
-        'USER': os.getenv('MRB_DB_USER', 'postgres'),
-        'PASSWORD': os.environ['MRB_DB_PASSWORD'],
-        'HOST': os.environ['MRB_DB_HOST'],
-        'PORT': int(os.getenv('MRB_DB_PORT', 5432)),
+        'NAME': os.getenv('POSTGRES_DB', 'moonrobot'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': os.environ['POSTGRES_HOST'],
+        'PORT': int(os.getenv('POSTGRES_PORT', 5432)),
     },
 }
 
