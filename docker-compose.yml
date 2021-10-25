@@ -11,7 +11,7 @@ services:
   web:
     restart: always
     build: .
-    command: pipenv run python manage.py runserver 0.0.0.0:8000  # TODO oleksandr: change to either gunicorn or uvicorn
+    command: pipenv run gunicorn --bind=0.0.0.0:8000 --workers 5 django_moonrobot.wsgi
     environment:
       <<: *database-credentials
       MRB_TELEGRAM_TOKEN: "${MRB_TELEGRAM_TOKEN}"
@@ -20,5 +20,6 @@ services:
       MRB_NOTION_ENTRYPOINTS_DB_ID: "${MRB_NOTION_ENTRYPOINTS_DB_ID}"
       MRB_NOTION_MESSAGES_DB_ID: "${MRB_NOTION_MESSAGES_DB_ID}"
       MRB_STATIC_URL: "${MRB_STATIC_URL}"
+      MRB_LOG_LEVEL: "${MRB_LOG_LEVEL:-WARNING}"
     ports:
       - "8000:8000"  # setting "80:8000" instead will make the app accessible on port 80 of the host machine
