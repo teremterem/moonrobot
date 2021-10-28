@@ -34,7 +34,7 @@ _notion_sync_thread.start()  # TODO oleksandr: use a pool of workers ?
 def _sync_db_to_notion():
     messages = MrbMessage.objects.filter(notion_synced=False)  # TODO oleksandr: order by message timestamp
     for message in messages:  # TODO oleksandr: get rid of this loop - only one item per second or so ! :(
-        notion_page_resp = create_notion_page({
+        notion_create_request = {
             'parent': {  # TODO oleksandr: move this inside of notion_client.py
                 'database_id': settings.MRB_NOTION_MESSAGES_DB_ID,
             },
@@ -48,7 +48,6 @@ def _sync_db_to_notion():
                         },
                     ],
                 },
-                'Username': _build_username(message),
                 'From user': {
                     'checkbox': message.from_user,
                 },
@@ -62,7 +61,11 @@ def _sync_db_to_notion():
                     'number': message.sent_timestamp,
                 },
             },
-        })
+        }
+        if message.from_user:
+            notion_create_request['properties']['Username'] = _build_username(message)
+
+        notion_page_resp = create_notion_page(notion_create_request)
 
         message.notion_id = notion_page_resp['id']
         message.notion_synced = True
