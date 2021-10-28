@@ -2,6 +2,7 @@ import time
 from threading import Event, Thread
 
 from django.conf import settings
+from telegram.utils.types import JSONDict
 
 from moonrobot.core.notion.notion_client import create_notion_page
 from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_entities
@@ -47,6 +48,7 @@ def _sync_db_to_notion():
                         },
                     ],
                 },
+                'Username': _build_username(message),
                 'From user': {
                     'checkbox': message.from_user,
                 },
@@ -65,3 +67,39 @@ def _sync_db_to_notion():
         message.notion_id = notion_page_resp['id']
         message.notion_synced = True
         message.save()  # TODO oleksandr: update only changed field
+
+
+def _build_username(message: MrbMessage) -> JSONDict:
+    if message.username:
+        href = f"https://t.me/{message.username}"
+        text = f"@{message.username}"
+
+        username_rt = {
+            'rich_text': [
+                {
+                    'href': href,
+                    'plain_text': text,
+                    'text': {
+                        'content': text,
+                        'link': {'url': href},
+                    },
+                    'type': 'text',
+                },
+            ],
+        }
+    else:
+        text = str(message.user_id)
+
+        username_rt = {
+            'rich_text': [
+                {
+                    'plain_text': text,
+                    'text': {
+                        'content': text,
+                    },
+                    'type': 'text',
+                },
+            ],
+        }
+
+    return username_rt

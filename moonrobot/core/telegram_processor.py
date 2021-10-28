@@ -58,16 +58,14 @@ class MoonRobotRequest(Request):
 
 
 def extract_user_display_name(telegram_user: User) -> str:
+    display_name = [name for name in (telegram_user.first_name, telegram_user.last_name) if name]
+    display_name = ' '.join(display_name)
+
+    if display_name:
+        return display_name
+
     user_handle_or_id = f"@{telegram_user.username}" if telegram_user.username else telegram_user.id
-
-    name_parts = [
-        telegram_user.first_name,
-        telegram_user.last_name,
-        user_handle_or_id,
-    ]
-    name_parts = [part for part in name_parts if part]
-
-    return ' '.join(name_parts)
+    return user_handle_or_id
 
 
 def handle_telegram_update_json(update_json: JSONDict, bot: Bot) -> None:
@@ -79,17 +77,18 @@ def handle_telegram_update_json(update_json: JSONDict, bot: Bot) -> None:
             logger.info('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))
 
         update = Update.de_json(update_json, bot)
-        effective_msg = update.effective_message
 
         mrb_user_message = MrbUserMessage(
-            unique_msg_id=construct_unique_msg_id(effective_msg),
-            plain_text=effective_msg.text,
-            text_entities=[e.to_dict() for e in effective_msg.entities],
+            unique_msg_id=construct_unique_msg_id(update.effective_message),
+            plain_text=update.effective_message.text,
+            text_entities=[e.to_dict() for e in update.effective_message.entities],
             from_user=True,
             user_display_name=extract_user_display_name(update.effective_user),
+            username=update.effective_user.username,
+            user_id=update.effective_user.id,
 
             # TODO oleksandr: fetch from the original dict instead ?
-            sent_timestamp=effective_msg.to_dict()['date'],
+            sent_timestamp=update.effective_message.to_dict()['date'],
 
             update_payload=update_json,
         )
