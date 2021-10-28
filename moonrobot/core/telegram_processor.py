@@ -4,7 +4,7 @@ from typing import Union, Optional
 
 from django.conf import settings
 # noinspection PyPackageRequirements
-from telegram import Bot, Message
+from telegram import Bot, Message, User
 # noinspection PyPackageRequirements
 from telegram import Update
 # noinspection PyPackageRequirements
@@ -57,6 +57,17 @@ class MoonRobotRequest(Request):
         return resp_json
 
 
+def extract_user_display_name(telegram_user: User) -> str:
+    display_name = [name for name in (telegram_user.first_name, telegram_user.last_name) if name]
+    display_name = ' '.join(display_name)
+
+    if display_name:
+        return display_name
+
+    user_handle_or_id = f"@{telegram_user.username}" if telegram_user.username else telegram_user.id
+    return user_handle_or_id
+
+
 def handle_telegram_update_json(update_json: JSONDict, bot: Bot) -> None:
     update = None
 
@@ -72,6 +83,9 @@ def handle_telegram_update_json(update_json: JSONDict, bot: Bot) -> None:
             plain_text=update.effective_message.text,
             text_entities=[e.to_dict() for e in update.effective_message.entities],
             from_user=True,
+            user_display_name=extract_user_display_name(update.effective_user),
+            username=update.effective_user.username,
+            user_id=update.effective_user.id,
 
             # TODO oleksandr: fetch from the original dict instead ?
             sent_timestamp=update.effective_message.to_dict()['date'],
