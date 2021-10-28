@@ -4,7 +4,7 @@ from typing import Union, Optional
 
 from django.conf import settings
 # noinspection PyPackageRequirements
-from telegram import Bot, Message
+from telegram import Bot, Message, User
 # noinspection PyPackageRequirements
 from telegram import Update
 # noinspection PyPackageRequirements
@@ -57,6 +57,19 @@ class MoonRobotRequest(Request):
         return resp_json
 
 
+def extract_user_display_name(telegram_user: User) -> str:
+    user_handle_or_id = f"@{telegram_user.username}" if telegram_user.username else telegram_user.id
+
+    name_parts = [
+        telegram_user.first_name,
+        telegram_user.last_name,
+        user_handle_or_id,
+    ]
+    name_parts = [part for part in name_parts if part]
+
+    return ' '.join(name_parts)
+
+
 def handle_telegram_update_json(update_json: JSONDict, bot: Bot) -> None:
     update = None
 
@@ -66,15 +79,17 @@ def handle_telegram_update_json(update_json: JSONDict, bot: Bot) -> None:
             logger.info('\nTELEGRAM UPDATE:\n\n%s\n', pformat(update_json))
 
         update = Update.de_json(update_json, bot)
+        effective_msg = update.effective_message
 
         mrb_user_message = MrbUserMessage(
-            unique_msg_id=construct_unique_msg_id(update.effective_message),
-            plain_text=update.effective_message.text,
-            text_entities=[e.to_dict() for e in update.effective_message.entities],
+            unique_msg_id=construct_unique_msg_id(effective_msg),
+            plain_text=effective_msg.text,
+            text_entities=[e.to_dict() for e in effective_msg.entities],
             from_user=True,
+            user_display_name=extract_user_display_name(update.effective_user),
 
             # TODO oleksandr: fetch from the original dict instead ?
-            sent_timestamp=update.effective_message.to_dict()['date'],
+            sent_timestamp=effective_msg.to_dict()['date'],
 
             update_payload=update_json,
         )

@@ -42,7 +42,7 @@ def _sync_db_to_notion():
                     'title': [
                         {
                             'text': {
-                                'content': 'USER' if message.from_user else 'BOT',
+                                'content': message.user_display_name if message.from_user else 'BOT',
                             },
                         },
                     ],
