@@ -44,7 +44,8 @@ def update_notion_page(page_id: str, body: JSONDict) -> JSONDict:
 
 
 def fetch_entrypoint_dict() -> JSONDict:
-    # TODO oleksandr: account for pagination; schedule as synchronization
+    # TODO oleksandr: account for pagination
+    # TODO schedule as synchronization
     entrypoints_db_content = query_notion_db(settings.MRB_NOTION_ENTRYPOINTS_DB_ID)
 
     # TODO oleksandr: store it in local DB
