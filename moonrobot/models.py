@@ -22,6 +22,11 @@ class MrbChat(NotionSyncable):
 
 
 class MrbMessage(NotionSyncable):
+    class Meta:
+        indexes = [
+            models.Index(fields=['chat_id', 'sent_timestamp']),
+        ]
+
     unique_msg_id = models.CharField(max_length=63, unique=True)  # TODO oleksandr: include bot_id
     plain_text = models.TextField(blank=True, null=True)
     text_entities = models.JSONField(blank=True, null=True)
@@ -29,7 +34,9 @@ class MrbMessage(NotionSyncable):
     # TODO oleksandr: get rid of these fields when you start employing a relation to MrbChat and MrbUser
     user_display_name = models.TextField(blank=True, null=True)
     username = models.TextField(blank=True, null=True)
+
     user_id = models.BigIntegerField(blank=True, null=True)
+    chat_id = models.BigIntegerField()
 
     from_user = models.BooleanField()
     sent_timestamp = models.BigIntegerField()
