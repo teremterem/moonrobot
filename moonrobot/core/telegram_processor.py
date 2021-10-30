@@ -39,6 +39,8 @@ class MoonRobotRequest(Request):
                 unique_msg_id=construct_unique_msg_id(resp_msg),
                 plain_text=resp_msg.text,
 
+                chat_id=resp_msg.chat_id,
+
                 # TODO oleksandr: fetch from the original dict instead ?
                 text_entities=[e.to_dict() for e in resp_msg.entities],
 
@@ -85,7 +87,9 @@ def handle_telegram_update_json(update_json: JSONDict, bot: Bot) -> None:
             from_user=True,
             user_display_name=extract_user_display_name(update.effective_user),
             username=update.effective_user.username,
+
             user_id=update.effective_user.id,
+            chat_id=update.effective_chat.id,
 
             # TODO oleksandr: fetch from the original dict instead ?
             sent_timestamp=update.effective_message.to_dict()['date'],
