@@ -37,7 +37,7 @@ _notion_sync_thread.start()  # TODO oleksandr: use a pool of workers ?
 def _sync_db_to_notion() -> None:
     from moonrobot.core.telegram_bot import get_bot
 
-    messages = MrbMessage.objects.filter(notion_synced=False)  # TODO oleksandr: order by message timestamp
+    messages = MrbMessage.objects.filter(notion_synced=False).order_by('sent_timestamp')
     for message in messages:  # TODO oleksandr: get rid of this loop - only one item per second or so ! :(
         if message.from_user:
             user_message = MrbUserMessage.objects.get(id=message.id)
@@ -46,6 +46,12 @@ def _sync_db_to_notion() -> None:
         else:
             bot_message = MrbBotMessage.objects.get(id=message.id)
             t_message = Message.de_json(bot_message.response_payload, get_bot())
+
+        latest_chat_messages = MrbMessage.objects.filter(chat_id=t_message.chat_id).order_by('-sent_timestamp')[:2]
+        prev_message = None
+        for prev_message in latest_chat_messages:
+            if prev_message.id != message.id:
+                break
 
         notion_create_request = {
             'parent': {  # TODO oleksandr: move this inside of notion_client.py
@@ -77,6 +83,14 @@ def _sync_db_to_notion() -> None:
         }
         if message.from_user:
             notion_create_request['properties']['Username'] = _build_username(message)
+        if prev_message and prev_message.notion_id:
+            notion_create_request['properties']['Prev. msg'] = {
+                'relation': [
+                    {
+                        'id': prev_message.notion_id,
+                    }
+                ],
+            }
 
         notion_page_resp = create_notion_page(notion_create_request)
 

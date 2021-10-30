@@ -5,7 +5,7 @@ class NotionSyncable(models.Model):
     class Meta:
         abstract = True
 
-    notion_synced = models.BooleanField(db_index=True, default=False)
+    notion_synced = models.BooleanField(db_index=True, default=False)  # TODO oleksandr: not to create an index here ?
     notion_id = models.TextField(blank=True, null=True, db_index=True)  # TODO oleksandr: unique=True ?
 
 
@@ -25,6 +25,7 @@ class MrbMessage(NotionSyncable):
     class Meta:
         indexes = [
             models.Index(fields=['chat_id', 'sent_timestamp']),
+            models.Index(fields=['notion_synced', 'sent_timestamp']),
         ]
 
     unique_msg_id = models.CharField(max_length=63, unique=True)  # TODO oleksandr: include bot_id
