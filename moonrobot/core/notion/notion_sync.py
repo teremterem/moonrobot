@@ -50,7 +50,7 @@ def _sync_db_to_notion() -> None:
         latest_chat_messages = MrbMessage.objects.filter(chat_id=t_message.chat_id).order_by('-sent_timestamp')[:2]
         prev_message = None
         for prev_message in latest_chat_messages:
-            if prev_message.id != message.id:
+            if prev_message != message:
                 break
 
         notion_create_request = {
