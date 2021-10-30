@@ -9,6 +9,7 @@ from telegram.utils.types import JSONDict
 
 from moonrobot.core.notion.notion_client import create_notion_page
 from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_entities
+from moonrobot.core.utils import construct_unique_msg_id
 from moonrobot.models import MrbMessage, MrbUserMessage, MrbBotMessage
 
 notion_db_sync_event = Event()
@@ -53,6 +54,11 @@ def _sync_db_to_notion() -> None:
             if prev_message != message:
                 break
 
+        reply_to_msg = None
+        if t_message.reply_to_message:
+            reply_to_unique = construct_unique_msg_id(t_message.reply_to_message)
+            reply_to_msg = MrbMessage.objects.filter(unique_msg_id=reply_to_unique).first()
+
         notion_create_request = {
             'parent': {  # TODO oleksandr: move this inside of notion_client.py
                 'database_id': settings.MRB_NOTION_MESSAGES_DB_ID,
@@ -88,7 +94,15 @@ def _sync_db_to_notion() -> None:
                 'relation': [
                     {
                         'id': prev_message.notion_id,
-                    }
+                    },
+                ],
+            }
+        if reply_to_msg and reply_to_msg.notion_id:
+            notion_create_request['properties']['A reply to'] = {
+                'relation': [
+                    {
+                        'id': reply_to_msg.notion_id,
+                    },
                 ],
             }
 
