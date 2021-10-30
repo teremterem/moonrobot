@@ -1,12 +1,16 @@
 import time
-from threading import Event, Thread
+from threading import Thread, Event
 
 from django.conf import settings
+# noinspection PyPackageRequirements
+from telegram import Update, Message
+# noinspection PyPackageRequirements
 from telegram.utils.types import JSONDict
 
 from moonrobot.core.notion.notion_client import create_notion_page
 from moonrobot.core.notion.notion_rich_text import rich_text_from_telegram_entities
-from moonrobot.models import MrbMessage
+from moonrobot.core.utils import construct_unique_msg_id
+from moonrobot.models import MrbMessage, MrbUserMessage, MrbBotMessage
 
 notion_db_sync_event = Event()
 
@@ -31,9 +35,30 @@ _notion_sync_thread.start()  # TODO oleksandr: use a pool of workers ?
 
 # TODO oleksandr: think what kind of racing conditions are possible (decide on transaction isolation mechanism)
 # TODO oleksandr: use transaction.atomic ?
-def _sync_db_to_notion():
-    messages = MrbMessage.objects.filter(notion_synced=False)  # TODO oleksandr: order by message timestamp
+def _sync_db_to_notion() -> None:
+    from moonrobot.core.telegram_bot import get_bot
+
+    messages = MrbMessage.objects.filter(notion_synced=False).order_by('sent_timestamp')
     for message in messages:  # TODO oleksandr: get rid of this loop - only one item per second or so ! :(
+        if message.from_user:
+            user_message = MrbUserMessage.objects.get(id=message.id)
+            t_update = Update.de_json(user_message.update_payload, get_bot())
+            t_message = t_update.effective_message
+        else:
+            bot_message = MrbBotMessage.objects.get(id=message.id)
+            t_message = Message.de_json(bot_message.response_payload, get_bot())
+
+        latest_chat_messages = MrbMessage.objects.filter(chat_id=t_message.chat_id).order_by('-sent_timestamp')[:2]
+        prev_message = None
+        for prev_message in latest_chat_messages:
+            if prev_message != message:
+                break
+
+        reply_to_msg = None
+        if t_message.reply_to_message:
+            reply_to_unique = construct_unique_msg_id(t_message.reply_to_message)
+            reply_to_msg = MrbMessage.objects.filter(unique_msg_id=reply_to_unique).first()
+
         notion_create_request = {
             'parent': {  # TODO oleksandr: move this inside of notion_client.py
                 'database_id': settings.MRB_NOTION_MESSAGES_DB_ID,
@@ -64,12 +89,28 @@ def _sync_db_to_notion():
         }
         if message.from_user:
             notion_create_request['properties']['Username'] = _build_username(message)
+        if prev_message and prev_message.notion_id:
+            notion_create_request['properties']['Prev. msg'] = {
+                'relation': [
+                    {
+                        'id': prev_message.notion_id,
+                    },
+                ],
+            }
+        if reply_to_msg and reply_to_msg.notion_id:
+            notion_create_request['properties']['A reply to'] = {
+                'relation': [
+                    {
+                        'id': reply_to_msg.notion_id,
+                    },
+                ],
+            }
 
         notion_page_resp = create_notion_page(notion_create_request)
 
         message.notion_id = notion_page_resp['id']
         message.notion_synced = True
-        message.save()  # TODO oleksandr: update only changed field
+        message.save()  # TODO oleksandr: save only updated fields
 
 
 def _build_username(message: MrbMessage) -> JSONDict:
