@@ -63,7 +63,7 @@ def _sync_db_to_notion() -> None:
 
         sent_zulu_time = from_timestamp(message.sent_timestamp)
         if sent_zulu_time:
-            sent_zulu_time = sent_zulu_time.isoformat(sep=' ', timespec='milliseconds').replace('+00:00', 'Z')
+            sent_zulu_time = sent_zulu_time.isoformat(sep=' ', timespec='seconds').replace('+00:00', 'Z')
         else:
             sent_zulu_time = ''
 
