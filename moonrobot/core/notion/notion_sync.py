@@ -110,7 +110,7 @@ def _sync_db_to_notion() -> None:
 
         message.notion_id = notion_page_resp['id']
         message.notion_synced = True
-        message.save()  # TODO oleksandr: update only changed field
+        message.save()  # TODO oleksandr: save only updated fields
 
 
 def _build_username(message: MrbMessage) -> JSONDict:
