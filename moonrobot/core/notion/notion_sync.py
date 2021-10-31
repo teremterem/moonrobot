@@ -5,6 +5,8 @@ from django.conf import settings
 # noinspection PyPackageRequirements
 from telegram import Update, Message
 # noinspection PyPackageRequirements
+from telegram.utils.helpers import from_timestamp
+# noinspection PyPackageRequirements
 from telegram.utils.types import JSONDict
 
 from moonrobot.core.notion.notion_client import create_notion_page
@@ -59,6 +61,12 @@ def _sync_db_to_notion() -> None:
             reply_to_unique = construct_unique_msg_id(t_message.reply_to_message)
             reply_to_msg = MrbMessage.objects.filter(unique_msg_id=reply_to_unique).first()
 
+        sent_zulu_time = from_timestamp(message.sent_timestamp)
+        if sent_zulu_time:
+            sent_zulu_time = sent_zulu_time.isoformat(sep=' ', timespec='seconds').replace('+00:00', 'Z')
+        else:
+            sent_zulu_time = ''
+
         notion_create_request = {
             'parent': {  # TODO oleksandr: move this inside of notion_client.py
                 'database_id': settings.MRB_NOTION_MESSAGES_DB_ID,
@@ -83,7 +91,13 @@ def _sync_db_to_notion() -> None:
                     ),
                 },
                 'Timestamp': {
-                    'number': message.sent_timestamp,
+                    'rich_text': [
+                        {
+                            'text': {
+                                'content': sent_zulu_time,
+                            },
+                        },
+                    ],
                 },
             },
         }
