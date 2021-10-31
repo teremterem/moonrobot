@@ -22,14 +22,18 @@ Specifying `-f docker-compose.yml` explicitly ensures that `docker-compose.overr
 docker-compose run --rm web pipenv run python manage.py migrate
 ```
 
+In PROD:
+```
+docker-compose -f docker-compose.yml run --rm web pipenv run python manage.py migrate
+```
+
 ### Create super user
 
 ```
 docker-compose run --rm web pipenv run python manage.py createsuperuser
 ```
 
-## Outdated
-
+In PROD:
 ```
-pipenv run python manage.py shell < moonrobot.py
+docker-compose -f docker-compose.yml run --rm web pipenv run python manage.py createsuperuser
 ```
