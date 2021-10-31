@@ -1,3 +1,4 @@
+import json
 import logging
 from pprint import pformat
 
@@ -9,6 +10,10 @@ from telegram.utils.types import JSONDict
 from moonrobot.core.notion.notion_rich_text import collect_plain_text, collect_html_text
 
 logger = logging.getLogger(__name__)
+
+
+class NotionError(Exception):
+    ...
 
 
 def request_notion(uri: str, method: str = 'post', body=None) -> JSONDict:
@@ -25,8 +30,10 @@ def request_notion(uri: str, method: str = 'post', body=None) -> JSONDict:
     ) as resp:
         resp_json = resp.json()
 
+    if resp_json.get('object') == 'error':
+        raise NotionError(json.dumps(resp_json))
+
     if logger.isEnabledFor(logging.DEBUG):
-        # TODO oleksandr: use a different logging level if there is an error
         logger.debug('\nNOTION: %s\n\n%s\n', url, pformat(resp_json))
     return resp_json
 
