@@ -167,8 +167,7 @@ LOGGING = {
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
             'filename': 'logs/moonrobot.log',
-            # 'maxBytes': 1024 * 1024 * 10,  # 10 MB
-            'maxBytes': 300,
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 100,
         },
     },
