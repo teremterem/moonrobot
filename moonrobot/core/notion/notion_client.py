@@ -19,6 +19,9 @@ class NotionError(Exception):
 def request_notion(uri: str, method: str = 'post', body=None) -> JSONDict:
     url = f"https://api.notion.com/v1/{uri}"
 
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug('\nNOTION REQUEST: %s %s\n\n%s\n', method, url, pformat(body))
+
     with requests.request(
             method,
             url,
@@ -34,7 +37,7 @@ def request_notion(uri: str, method: str = 'post', body=None) -> JSONDict:
         raise NotionError(json.dumps(resp_json))
 
     if logger.isEnabledFor(logging.DEBUG):
-        logger.debug('\nNOTION: %s\n\n%s\n', url, pformat(resp_json))
+        logger.debug('\nNOTION RESPONSE TO %s %s\n\n%s\n', method, url, pformat(resp_json))
     return resp_json
 
 

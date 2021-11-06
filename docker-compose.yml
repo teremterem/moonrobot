@@ -23,3 +23,5 @@ services:
       MRB_LOG_LEVEL: "${MRB_LOG_LEVEL:-WARNING}"
     ports:
       - "8000:8000"  # setting "80:8000" instead will make the app accessible on port 80 of the host machine
+    volumes:
+      - logs:/code/logs
