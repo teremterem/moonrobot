@@ -149,13 +149,31 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
         },
+        'rotating_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filename': 'logs/moonrobot.log',
+            # 'maxBytes': 1024 * 1024 * 10,  # 10 MB
+            'maxBytes': 300,
+            'backupCount': 100,
+        },
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'rotating_file'],
         'level': os.getenv('MRB_LOG_LEVEL') or 'WARNING',
     },
 }
