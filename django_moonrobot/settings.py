@@ -40,6 +40,10 @@ ALLOWED_HOSTS = [MRB_WEBHOOK_HOST]
 if DEBUG:
     ALLOWED_HOSTS.append('localhost')
 
+MORE_ALLOWED_HOSTS = os.getenv('MRB_MORE_ALLOWED_HOSTS') or ''
+if MORE_ALLOWED_HOSTS:
+    ALLOWED_HOSTS.extend(MORE_ALLOWED_HOSTS.split(','))
+
 # Application definition
 
 INSTALLED_APPS = [
