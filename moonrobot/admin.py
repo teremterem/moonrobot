@@ -17,6 +17,8 @@ from moonrobot.models import MrbBot, MrbUser, MrbChat, MrbMessage, MrbUserMessag
 
 logger = logging.getLogger(__name__)
 
+SLEEP_SEC = 1.1
+
 
 def extract_telegram_message(mrb_msg: MrbMessage) -> Message:
     message = None
@@ -67,7 +69,7 @@ def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, query
 
     for i, outbox_msg in enumerate(messages_db_content['results']):
         if i > 0:
-            time.sleep(1)
+            time.sleep(SLEEP_SEC)
 
         # noinspection PyBroadException
         try:
@@ -83,7 +85,7 @@ def process_outbox(modeladmin: 'MrbBotMessageAdmin', request: HttpRequest, query
 
                 for j, answer_with_msg in enumerate(answer_with_msgs):
                     if j > 0:
-                        time.sleep(1)
+                        time.sleep(SLEEP_SEC)
 
                     get_bot().send_message(
                         chat_id,
